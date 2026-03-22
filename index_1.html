@@ -1,0 +1,897 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Snus Catalogue</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Syne:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --ink:#09090b;--ink2:#111115;--ink3:#18181e;--ink4:#222229;
+  --line:#2e2e38;--line2:#3d3d4a;
+  --gold:#bf9b4e;--gold2:#d9b96a;--gold3:rgba(191,155,78,.1);--gold4:rgba(191,155,78,.22);
+  --cream:#f0ece3;--cream2:#b8b4aa;--cream3:#6e6b65;
+  --red:#c94545;--green:#3d9e6a;
+  --r:10px;--sidebar:258px;--hdr:58px;--timer:44px;--cart:380px;
+}
+html{scroll-behavior:smooth;font-size:15px}
+body{font-family:'Syne',sans-serif;background:var(--ink);color:var(--cream);min-height:100vh;overflow-x:hidden}
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-track{background:var(--ink2)}
+::-webkit-scrollbar-thumb{background:var(--line2);border-radius:4px}
+::-webkit-scrollbar-thumb:hover{background:var(--gold)}
+
+/* ── TIMER BANNER ── */
+#timerBanner{
+  position:fixed;top:0;left:0;right:0;z-index:400;
+  height:var(--timer);
+  background:linear-gradient(90deg,#1a1508,#2a1f08,#1a1508);
+  border-bottom:1px solid rgba(191,155,78,.3);
+  display:flex;align-items:center;justify-content:center;gap:10px;
+  font-size:.78rem;color:var(--cream2);
+}
+.timer-label{font-weight:600;letter-spacing:.08em;text-transform:uppercase;font-size:.68rem;color:var(--gold)}
+.timer-blocks{display:flex;align-items:center;gap:6px}
+.tblock{
+  background:rgba(0,0,0,.4);border:1px solid rgba(191,155,78,.25);
+  border-radius:6px;padding:4px 10px;text-align:center;min-width:48px;
+}
+.tnum{font-family:'Cormorant Garamond',serif;font-size:1.15rem;font-weight:700;color:var(--gold2);line-height:1}
+.tlbl{font-size:.55rem;letter-spacing:.1em;text-transform:uppercase;color:var(--cream3);margin-top:1px}
+.tsep{color:var(--gold);font-size:1.1rem;opacity:.5;margin-top:-4px}
+.timer-msg{font-size:.7rem;color:var(--cream3);margin-left:6px}
+.timer-urgent{color:var(--red)!important}
+
+/* ── HEADER ── */
+header{
+  position:fixed;top:var(--timer);left:0;right:0;z-index:300;
+  height:var(--hdr);
+  background:rgba(9,9,11,.95);
+  backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--line);
+  display:flex;align-items:center;padding:0 20px;gap:14px;
+}
+.logo{
+  font-family:'Cormorant Garamond',serif;
+  font-size:1.35rem;font-weight:700;letter-spacing:.06em;
+  color:var(--cream);white-space:nowrap;
+}
+.logo span{color:var(--gold);font-style:italic}
+.logo-sep{color:var(--line2);margin:0 4px}
+.search-box{flex:1;max-width:380px;position:relative}
+.search-box svg{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--cream3);pointer-events:none}
+#searchInput{
+  width:100%;background:var(--ink3);border:1px solid var(--line);border-radius:8px;
+  color:var(--cream);padding:8px 14px 8px 34px;
+  font-family:'Syne',sans-serif;font-size:.82rem;outline:none;transition:border .2s;
+}
+#searchInput:focus{border-color:var(--gold)}
+#searchInput::placeholder{color:var(--cream3)}
+.hgap{flex:1}
+.count-lbl{font-size:.73rem;color:var(--cream3);white-space:nowrap}
+.count-lbl strong{color:var(--gold2);font-weight:700}
+.cart-btn{
+  background:var(--gold);border:none;border-radius:8px;color:#000;
+  padding:8px 16px 8px 12px;font-family:'Syne',sans-serif;font-size:.8rem;font-weight:700;
+  cursor:pointer;display:flex;align-items:center;gap:7px;
+  transition:background .15s,transform .1s;white-space:nowrap;
+}
+.cart-btn:hover{background:var(--gold2);transform:translateY(-1px)}
+.cart-n{background:#000;color:var(--gold);border-radius:20px;padding:1px 7px;font-size:.7rem;font-weight:700;min-width:20px;text-align:center}
+.cart-n.hide{display:none}
+
+/* ── LAYOUT ── */
+.wrap{display:flex;padding-top:calc(var(--timer) + var(--hdr));min-height:100vh}
+
+/* ── SIDEBAR ── */
+aside{
+  width:var(--sidebar);min-width:var(--sidebar);
+  background:var(--ink2);border-right:1px solid var(--line);
+  position:fixed;top:calc(var(--timer)+var(--hdr));left:0;
+  height:calc(100vh - var(--timer) - var(--hdr));
+  overflow-y:auto;padding:18px 13px 40px;
+}
+.fg{margin-bottom:22px}
+.fgt{
+  font-size:.6rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--gold);margin-bottom:9px;padding:0 6px;
+  display:flex;align-items:center;gap:8px;
+}
+.fgt::after{content:'';flex:1;height:1px;background:var(--line)}
+.fb{
+  display:flex;align-items:center;gap:7px;width:100%;background:none;
+  border:1px solid transparent;border-radius:7px;color:var(--cream3);
+  text-align:left;padding:7px 10px;font-family:'Syne',sans-serif;font-size:.8rem;
+  cursor:pointer;transition:all .15s;margin-bottom:1px;
+}
+.fb:hover{color:var(--cream2);background:var(--ink3)}
+.fb.on{color:var(--gold2);background:var(--gold3);border-color:var(--gold4)}
+.fdot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.clr-btn{
+  display:flex;align-items:center;justify-content:center;gap:6px;
+  width:100%;background:none;border:1px solid var(--line);
+  border-radius:7px;color:var(--cream3);padding:7px;
+  font-family:'Syne',sans-serif;font-size:.74rem;cursor:pointer;
+  transition:all .15s;margin-top:8px;
+}
+.clr-btn:hover{border-color:var(--gold);color:var(--gold)}
+
+/* ── MAIN ── */
+main{margin-left:var(--sidebar);flex:1;min-width:0;padding:20px 20px 60px;transition:margin-right .3s}
+main.co{margin-right:var(--cart)}
+.topbar{display:flex;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:14px}
+.pg-title{font-family:'Cormorant Garamond',serif;font-size:1.5rem;font-weight:600;color:var(--cream);line-height:1}
+.pg-sub{font-family:'Syne',sans-serif;font-size:.78rem;color:var(--cream3);font-style:normal;margin-left:8px}
+.sort-row{margin-left:auto;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.slbl{font-size:.72rem;color:var(--cream3)}
+.sbtn{background:var(--ink3);border:1px solid var(--line);border-radius:6px;color:var(--cream3);padding:5px 10px;font-family:'Syne',sans-serif;font-size:.72rem;cursor:pointer;transition:all .15s}
+.sbtn.on,.sbtn:hover{color:var(--gold2);border-color:var(--gold4);background:var(--gold3)}
+#chips{display:flex;gap:5px;flex-wrap:wrap}
+.chip{display:inline-flex;align-items:center;gap:4px;background:var(--gold3);border:1px solid var(--gold4);border-radius:20px;padding:3px 9px;font-size:.7rem;color:var(--gold2)}
+.cx{background:none;border:none;cursor:pointer;color:var(--gold2);font-size:.8rem;line-height:1;padding:0;opacity:.7}
+.cx:hover{opacity:1}
+
+/* ── GRID ── */
+#grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(188px,1fr));gap:12px;margin-top:12px}
+
+/* ── CARD ── */
+.card{background:var(--ink2);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;cursor:pointer;transition:transform .2s,border-color .2s,box-shadow .2s;position:relative;display:flex;flex-direction:column}
+.card:hover{transform:translateY(-3px);border-color:rgba(191,155,78,.4);box-shadow:0 12px 32px rgba(0,0,0,.55)}
+.cimg{width:100%;height:140px;background:var(--ink3);display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;flex-shrink:0}
+.cimg img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;padding:8px;opacity:0;transition:opacity .3s,transform .3s}
+.cimg img.in{opacity:1}
+.card:hover .cimg img.in{transform:scale(1.06)}
+.ceph{font-size:3rem;user-select:none;transition:opacity .3s}
+.shim{background:linear-gradient(90deg,var(--ink3) 0%,var(--ink4) 50%,var(--ink3) 100%);background-size:300%;animation:sh 1.6s infinite}
+@keyframes sh{0%{background-position:200%}100%{background-position:-200%}}
+.cbody{padding:10px 12px 12px;flex:1;display:flex;flex-direction:column}
+.cbrnd{font-size:.62rem;font-weight:700;letter-spacing:.11em;text-transform:uppercase;color:var(--gold);margin-bottom:2px}
+.cname{font-family:'Cormorant Garamond',serif;font-size:.98rem;font-weight:600;line-height:1.25;color:var(--cream);margin-bottom:7px;flex:1}
+.ctags{display:flex;flex-wrap:wrap;gap:3px;margin-bottom:8px}
+.tag{font-size:.6rem;font-weight:600;padding:2px 7px;border-radius:20px;letter-spacing:.02em}
+.tf{background:rgba(255,255,255,.04);color:var(--cream3);border:1px solid var(--line)}
+.cbot{display:flex;align-items:center;justify-content:space-between}
+.cpr{font-family:'Cormorant Garamond',serif;font-size:1.12rem;font-weight:700;color:var(--gold2)}
+.cnic{font-size:.63rem;color:var(--cream3);margin-top:2px}
+.add-btn{
+  background:var(--gold3);border:1px solid var(--gold4);border-radius:7px;
+  color:var(--gold2);width:30px;height:30px;font-size:1.1rem;
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;transition:all .15s;flex-shrink:0;
+}
+.add-btn:hover{background:var(--gold);color:#000;border-color:var(--gold)}
+.bdg{position:absolute;font-size:.58rem;font-weight:800;letter-spacing:.07em;padding:3px 7px;border-radius:4px;line-height:1}
+.bsale{top:8px;right:8px;background:var(--red);color:#fff}
+.s0{color:#aaa;border:1px solid #aaa}.s1{color:#5ecf94;border:1px solid #5ecf94}
+.s2{color:#5ab5e8;border:1px solid #5ab5e8}.s3{color:#e8c43a;border:1px solid #e8c43a}
+.s4{color:#e8853a;border:1px solid #e8853a}.s5{color:#de4040;border:1px solid #de4040}
+.d0{background:#aaa}.d1{background:#5ecf94}.d2{background:#5ab5e8}
+.d3{background:#e8c43a}.d4{background:#e8853a}.d5{background:#de4040}
+.nores{grid-column:1/-1;padding:80px 20px;text-align:center;color:var(--cream3)}
+.nores .ni{font-size:2.5rem;display:block;margin-bottom:12px}
+
+/* ── MODAL ── */
+.ovl{display:none;position:fixed;inset:0;background:rgba(0,0,0,.82);backdrop-filter:blur(8px);z-index:400;align-items:center;justify-content:center;padding:20px}
+.ovl.open{display:flex}
+.modal{background:var(--ink2);border:1px solid var(--line);border-radius:14px;width:520px;max-width:100%;max-height:90vh;overflow-y:auto;animation:rise .2s ease;position:relative}
+@keyframes rise{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
+.mimg{width:100%;height:210px;background:var(--ink3);border-radius:14px 14px 0 0;overflow:hidden;display:flex;align-items:center;justify-content:center;position:relative;flex-shrink:0}
+.mimg img{max-width:100%;max-height:100%;object-fit:contain;padding:16px;position:absolute;opacity:0;transition:opacity .3s}
+.mimg img.in{opacity:1}
+.meph{font-size:5rem}
+.mcls{position:absolute;top:12px;right:12px;z-index:10;background:var(--ink3);border:1px solid var(--line);border-radius:7px;width:30px;height:30px;color:var(--cream3);cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center;transition:all .15s}
+.mcls:hover{color:var(--cream);border-color:var(--line2)}
+.mbody{padding:22px 24px 24px}
+.mbrnd{font-size:.62rem;font-weight:700;letter-spacing:.13em;text-transform:uppercase;color:var(--gold);margin-bottom:4px}
+.mname{font-family:'Cormorant Garamond',serif;font-size:1.75rem;font-weight:600;line-height:1.2;margin-bottom:14px}
+.mtags{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:16px}
+.mspec{background:var(--ink3);border-radius:8px;overflow:hidden;margin-bottom:18px}
+.sr{display:flex;justify-content:space-between;padding:9px 14px;border-bottom:1px solid var(--line);font-size:.82rem}
+.sr:last-child{border:none}
+.sl2{color:var(--cream3)}.sv{font-weight:600}
+.mftr{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.mpr{font-family:'Cormorant Garamond',serif;font-size:2rem;font-weight:700;color:var(--gold2)}
+.mcost{font-size:.78rem;color:var(--cream3)}
+.madd{margin-left:auto;background:var(--gold);border:none;border-radius:9px;color:#000;padding:11px 22px;font-family:'Syne',sans-serif;font-size:.82rem;font-weight:700;cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:8px}
+.madd:hover{background:var(--gold2);transform:translateY(-1px)}
+
+/* ── CART DRAWER ── */
+.cart-drw{
+  position:fixed;top:calc(var(--timer)+var(--hdr));right:0;
+  width:var(--cart);height:calc(100vh - var(--timer) - var(--hdr));
+  background:var(--ink2);border-left:1px solid var(--line);
+  z-index:250;display:flex;flex-direction:column;
+  transform:translateX(100%);transition:transform .3s cubic-bezier(.4,0,.2,1);
+}
+.cart-drw.open{transform:none}
+.cart-hdr{padding:16px 16px 12px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:10px;flex-shrink:0}
+.cart-ttl{font-family:'Cormorant Garamond',serif;font-size:1.2rem;font-weight:700;flex:1}
+.ccls{background:none;border:1px solid var(--line);border-radius:7px;color:var(--cream3);width:28px;height:28px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:.9rem;transition:all .15s}
+.ccls:hover{color:var(--cream);border-color:var(--line2)}
+.cart-items{flex:1;overflow-y:auto;padding:10px 14px}
+.cempty{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;color:var(--cream3);text-align:center;gap:8px}
+.cempty big{font-size:2.5rem}
+.cempty p{font-size:.8rem}
+.ci{display:flex;align-items:center;gap:9px;padding:9px 0;border-bottom:1px solid var(--line)}
+.ci:last-child{border:none}
+.cithumb{width:46px;height:46px;border-radius:7px;background:var(--ink3);flex-shrink:0;display:flex;align-items:center;justify-content:center;overflow:hidden;font-size:1.3rem}
+.cithumb img{width:100%;height:100%;object-fit:contain;padding:3px}
+.ciinfo{flex:1;min-width:0}
+.cibrnd{font-size:.57rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--gold)}
+.ciname{font-size:.78rem;font-weight:600;color:var(--cream);line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ciprice{font-size:.76rem;color:var(--gold2);font-weight:700;margin-top:2px}
+.ciqty{display:flex;align-items:center;gap:5px;flex-shrink:0}
+.qbtn{background:var(--ink3);border:1px solid var(--line);border-radius:5px;width:24px;height:24px;color:var(--cream3);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:.85rem;font-weight:700;transition:all .15s}
+.qbtn:hover{background:var(--ink4);color:var(--cream);border-color:var(--line2)}
+.qnum{font-size:.78rem;font-weight:700;color:var(--cream);min-width:18px;text-align:center}
+.cirm{background:none;border:none;color:var(--cream3);cursor:pointer;font-size:.82rem;padding:2px;transition:color .15s;flex-shrink:0}
+.cirm:hover{color:var(--red)}
+.cart-ftr{padding:12px 14px;border-top:1px solid var(--line);flex-shrink:0}
+.ct-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.ct-lbl{font-size:.8rem;color:var(--cream3)}
+.ct-amt{font-family:'Cormorant Garamond',serif;font-size:1.5rem;font-weight:700;color:var(--gold2)}
+.cform{margin-bottom:10px}
+.cform-row{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:7px}
+.cform-row.full{grid-template-columns:1fr}
+.cform input,.cform textarea{width:100%;background:var(--ink3);border:1px solid var(--line);border-radius:7px;color:var(--cream);padding:7px 10px;font-family:'Syne',sans-serif;font-size:.74rem;outline:none;transition:border .2s}
+.cform input:focus,.cform textarea:focus{border-color:var(--gold)}
+.cform input::placeholder,.cform textarea::placeholder{color:var(--cream3)}
+.cform textarea{resize:none;height:52px}
+.flbl{font-size:.6rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--cream3);margin-bottom:5px;display:block}
+.cacts{display:flex;flex-direction:column;gap:7px}
+.exp-btn{background:var(--gold);border:none;border-radius:8px;color:#000;padding:11px;width:100%;font-family:'Syne',sans-serif;font-size:.8rem;font-weight:700;cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center;gap:8px}
+.exp-btn:hover{background:var(--gold2)}
+.cpy-btn{background:var(--ink3);border:1px solid var(--line);border-radius:8px;color:var(--cream3);padding:9px;width:100%;font-family:'Syne',sans-serif;font-size:.76rem;font-weight:600;cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center;gap:7px}
+.cpy-btn:hover{border-color:var(--line2);color:var(--cream)}
+.clrcrt{background:none;border:none;color:var(--cream3);font-family:'Syne',sans-serif;font-size:.7rem;cursor:pointer;text-align:center;width:100%;padding:3px;transition:color .15s}
+.clrcrt:hover{color:var(--red)}
+.toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--ink3);border:1px solid var(--line2);border-radius:8px;padding:9px 16px;font-size:.76rem;color:var(--cream);z-index:1000;opacity:0;transition:all .3s;pointer-events:none;display:flex;align-items:center;gap:7px;white-space:nowrap}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.ti-ok{color:var(--green)}.ti-inf{color:var(--gold)}
+</style>
+</head>
+<body>
+
+<!-- TIMER BANNER -->
+<div id="timerBanner">
+  <span class="timer-label">⏳ Next Order In</span>
+  <div class="timer-blocks">
+    <div class="tblock"><div class="tnum" id="tD">--</div><div class="tlbl">Days</div></div>
+    <span class="tsep">:</span>
+    <div class="tblock"><div class="tnum" id="tH">--</div><div class="tlbl">Hrs</div></div>
+    <span class="tsep">:</span>
+    <div class="tblock"><div class="tnum" id="tM">--</div><div class="tlbl">Min</div></div>
+    <span class="tsep">:</span>
+    <div class="tblock"><div class="tnum" id="tS">--</div><div class="tlbl">Sec</div></div>
+  </div>
+  <span class="timer-msg" id="timerMsg">— order deadline</span>
+</div>
+
+<header>
+  <div class="logo">Snus <span>Catalogue</span></div>
+  <div class="logo-sep">|</div>
+  <div class="search-box">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+    <input id="searchInput" type="text" placeholder="Search brand, name or flavour…" oninput="rf()">
+  </div>
+  <div class="hgap"></div>
+  <div class="count-lbl">Showing <strong id="cnt">0</strong> products</div>
+  <button class="cart-btn" onclick="toggleCart()">
+    🛒 My Order <span class="cart-n hide" id="cartN">0</span>
+  </button>
+</header>
+
+<div class="wrap">
+  <aside>
+    <div class="fg">
+      <div class="fgt">Browse</div>
+      <button class="fb on" data-k="cat" data-v="all" onclick="setF('cat','all',this)">All Products</button>
+      <button class="fb" data-k="cat" data-v="sale" onclick="setF('cat','sale',this)">🔥 On Sale</button>
+    </div>
+    <div class="fg">
+      <div class="fgt">Strength</div>
+      <button class="fb on" data-k="str" data-v="all" onclick="setF('str','all',this)">All Strengths</button>
+      <button class="fb" data-k="str" data-v="Leicht" onclick="setF('str','Leicht',this)"><span class="fdot d1"></span>Light · 1–5 mg</button>
+      <button class="fb" data-k="str" data-v="Mittelstark" onclick="setF('str','Mittelstark',this)"><span class="fdot d2"></span>Medium · 6–9 mg</button>
+      <button class="fb" data-k="str" data-v="Stärker" onclick="setF('str','Stärker',this)"><span class="fdot d3"></span>Strong · 10–14 mg</button>
+      <button class="fb" data-k="str" data-v="Extra Stark" onclick="setF('str','Extra Stark',this)"><span class="fdot d4"></span>Extra · 15–20 mg</button>
+      <button class="fb" data-k="str" data-v="Ultra Stark" onclick="setF('str','Ultra Stark',this)"><span class="fdot d5"></span>Ultra · 21–65 mg</button>
+    </div>
+    <div class="fg">
+      <div class="fgt">Flavour</div>
+      <button class="fb on" data-k="flv" data-v="all" onclick="setF('flv','all',this)">All Flavours</button>
+      <button class="fb" data-k="flv" data-v="mint" onclick="setF('flv','mint',this)">🌿 Mint / Menthol</button>
+      <button class="fb" data-k="flv" data-v="berry" onclick="setF('flv','berry',this)">🫐 Berry</button>
+      <button class="fb" data-k="flv" data-v="fruit" onclick="setF('flv','fruit',this)">🍑 Fruit</button>
+      <button class="fb" data-k="flv" data-v="other" onclick="setF('flv','other',this)">🌶️ Other</button>
+    </div>
+    <div class="fg">
+      <div class="fgt">Brand</div>
+      <button class="fb on" data-k="brd" data-v="all" onclick="setF('brd','all',this)">All Brands</button>
+      <button class="fb" data-k="brd" data-v="Pablo" onclick="setF('brd','Pablo',this)">Pablo</button>
+      <button class="fb" data-k="brd" data-v="Klint" onclick="setF('brd','Klint',this)">Klint</button>
+      <button class="fb" data-k="brd" data-v="Cuba" onclick="setF('brd','Cuba',this)">Cuba</button>
+      <button class="fb" data-k="brd" data-v="Grant" onclick="setF('brd','Grant',this)">Grant</button>
+      <button class="fb" data-k="brd" data-v="Garant" onclick="setF('brd','Garant',this)">Garant</button>
+      <button class="fb" data-k="brd" data-v="Nois" onclick="setF('brd','Nois',this)">Nois</button>
+      <button class="fb" data-k="brd" data-v="Killa" onclick="setF('brd','Killa',this)">Killa</button>
+      <button class="fb" data-k="brd" data-v="Loop" onclick="setF('brd','Loop',this)">Loop</button>
+      <button class="fb" data-k="brd" data-v="Velo" onclick="setF('brd','Velo',this)">Velo</button>
+      <button class="fb" data-k="brd" data-v="White Fox" onclick="setF('brd','White Fox',this)">White Fox</button>
+      <button class="fb" data-k="brd" data-v="Nor" onclick="setF('brd','Nor',this)">Nor</button>
+      <button class="fb" data-k="brd" data-v="Kuma" onclick="setF('brd','Kuma',this)">Kuma</button>
+      <button class="fb" data-k="brd" data-v="Fix" onclick="setF('brd','Fix',this)">Fix</button>
+      <button class="fb" data-k="brd" data-v="Nued" onclick="setF('brd','Nued',this)">Nued</button>
+      <button class="fb" data-k="brd" data-v="Apres" onclick="setF('brd','Apres',this)">Apres</button>
+      <button class="fb" data-k="brd" data-v="SYX" onclick="setF('brd','SYX',this)">SYX</button>
+      <button class="fb" data-k="brd" data-v="Edel" onclick="setF('brd','Edel',this)">Edel</button>
+      <button class="fb" data-k="brd" data-v="Zeus" onclick="setF('brd','Zeus',this)">Zeus</button>
+      <button class="fb" data-k="brd" data-v="Glitch" onclick="setF('brd','Glitch',this)">Glitch</button>
+      <button class="fb" data-k="brd" data-v="Iceberg" onclick="setF('brd','Iceberg',this)">Iceberg</button>
+      <button class="fb" data-k="brd" data-v="V&YOU" onclick="setF('brd','V&YOU',this)">V&amp;YOU</button>
+      <button class="fb" data-k="brd" data-v="Baron" onclick="setF('brd','Baron',this)">Baron</button>
+      <button class="fb" data-k="brd" data-v="Fedrs" onclick="setF('brd','Fedrs',this)">Fedrs</button>
+      <button class="fb" data-k="brd" data-v="Camo" onclick="setF('brd','Camo',this)">Camo</button>
+      <button class="fb" data-k="brd" data-v="Kurwa" onclick="setF('brd','Kurwa',this)">Kurwa</button>
+      <button class="fb" data-k="brd" data-v="Greatest" onclick="setF('brd','Greatest',this)">Greatest</button>
+      <button class="fb" data-k="brd" data-v="NOAT" onclick="setF('brd','NOAT',this)">NOAT</button>
+      <button class="fb" data-k="brd" data-v="Vont" onclick="setF('brd','Vont',this)">Vont</button>
+      <button class="fb" data-k="brd" data-v="ACE" onclick="setF('brd','ACE',this)">ACE</button>
+      <button class="fb" data-k="brd" data-v="DOPE" onclick="setF('brd','DOPE',this)">DOPE</button>
+      <button class="fb" data-k="brd" data-v="Noto" onclick="setF('brd','Noto',this)">Noto</button>
+    </div>
+    <button class="clr-btn" onclick="clearAll()">↺ Reset filters</button>
+  </aside>
+
+  <main id="mainArea">
+    <div class="topbar">
+      <div class="pg-title">Products <span class="pg-sub">— prices in EUR</span></div>
+      <div class="sort-row">
+        <span class="slbl">Sort:</span>
+        <button class="sbtn on" onclick="setSort('def',this)">Default</button>
+        <button class="sbtn" onclick="setSort('asc',this)">Price ↑</button>
+        <button class="sbtn" onclick="setSort('desc',this)">Price ↓</button>
+        <button class="sbtn" onclick="setSort('az',this)">A–Z</button>
+      </div>
+    </div>
+    <div id="chips" style="margin-bottom:12px"></div>
+    <div id="grid"></div>
+  </main>
+</div>
+
+<!-- CART DRAWER -->
+<div class="cart-drw" id="cartDrw">
+  <div class="cart-hdr">
+    <div class="cart-ttl">🛒 My Order</div>
+    <button class="ccls" onclick="toggleCart()">✕</button>
+  </div>
+  <div class="cart-items" id="cartItems">
+    <div class="cempty" id="cartEmpty"><big>🛒</big><p>Empty — click ＋ on any product</p></div>
+  </div>
+  <div class="cart-ftr" id="cartFtr" style="display:none">
+    <div class="ct-row">
+      <span class="ct-lbl">Total</span>
+      <span class="ct-amt" id="cartTotal">€0</span>
+    </div>
+    <div class="cform">
+      <label class="flbl">Your details (optional)</label>
+      <div class="cform-row">
+        <input id="cName" type="text" placeholder="Name">
+        <input id="cPhone" type="text" placeholder="Phone / WhatsApp">
+      </div>
+      <div class="cform-row full">
+        <textarea id="cNote" placeholder="Notes…"></textarea>
+      </div>
+    </div>
+    <div class="cacts">
+      <button class="exp-btn" onclick="exportOrder()">⬇ Download Order (.txt)</button>
+      <button class="cpy-btn" onclick="copyOrder()">📋 Copy to Clipboard</button>
+      <button class="clrcrt" onclick="clearCart()">Clear order</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL -->
+<div class="ovl" id="ovl" onclick="ovlClick(event)">
+  <div class="modal" id="modal">
+    <button class="mcls" onclick="closeMod()">✕</button>
+    <div class="mimg" id="mImg"></div>
+    <div class="mbody">
+      <div class="mbrnd" id="mBrand"></div>
+      <div class="mname" id="mName"></div>
+      <div class="mtags" id="mTags"></div>
+      <div class="mspec" id="mSpec"></div>
+      <div class="mftr">
+        <div>
+          <div class="mpr" id="mPrice"></div>
+          <div class="mcost" id="mCost"></div>
+        </div>
+        <button class="madd" id="mAddBtn">＋ Add to Order</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"><span id="ti"></span><span id="tm"></span></div>
+
+<script>
+// ══ PRODUCTS (195 items from snuzone.com) ══
+const P=[
+  {id:1,b:"Pablo",n:"Pablo Ice Cold",h:"pablo-ice-cold",str:"Ultra Stark",sl:5,flv:"mint",cost:3.99,sell:5},
+  {id:2,b:"Grant",n:"Grant Extreme Edition",h:"grant-extreme-edition",str:"Ultra Stark",sl:5,flv:"mint",cost:4.55,sell:6},
+  {id:3,b:"Cuba",n:"Cuba Black Cherry",h:"cuba-black-line-cherry",str:"Ultra Stark",sl:5,flv:"fruit",cost:4.5,sell:6},
+  {id:4,b:"Pablo",n:"Pablo Exclusive Kiwi",h:"pablo-exclusive-kiwi",str:"Ultra Stark",sl:5,flv:"fruit",cost:3.99,sell:5},
+  {id:5,b:"Pablo",n:"Pablo Exclusive Grape Ice",h:"pablo-exklusive-grape-ice",str:"Ultra Stark",sl:5,flv:"fruit",cost:3.99,sell:5},
+  {id:6,b:"Nois",n:"Nois Extreme Blueberry",h:"nois-extreme-blueberry",str:"Ultra Stark",sl:5,flv:"berry",cost:3.99,sell:5},
+  {id:7,b:"Garant",n:"Garant Ice Cool",h:"garant-ice-cool",str:"Ultra Stark",sl:5,flv:"mint",cost:4.55,sell:6},
+  {id:8,b:"Pablo",n:"Pablo Exclusive Mango Ice",h:"pablo-exclusive-mango-ice",str:"Ultra Stark",sl:5,flv:"fruit",cost:3.99,sell:5},
+  {id:9,b:"Cuba",n:"Cuba Black Blueberry",h:"cuba-black-blueberry",str:"Ultra Stark",sl:5,flv:"berry",cost:4.5,sell:6},
+  {id:10,b:"Klint",n:"Klint Avalanche Mint",h:"klint-avalanche-mint",str:"Ultra Stark",sl:5,flv:"mint",cost:2.59,sell:4},
+  {id:11,b:"Velo",n:"Velo Freezing Peppermint Max Slim",h:"velo-sweden-x-freeze-max",str:"Ultra Stark",sl:5,flv:"mint",cost:5.45,sell:7},
+  {id:12,b:"Klint",n:"Klint Arctic Mint X-Strong",h:"klint-arctic-mint-x-strong",str:"Extra Stark",sl:4,flv:"mint",cost:2.59,sell:4},
+  {id:13,b:"Pablo",n:"Pablo Exclusive Passion Fruit",h:"pablo-exclusive-passion-fruit",str:"Ultra Stark",sl:5,flv:"fruit",cost:3.99,sell:5},
+  {id:14,b:"Nois",n:"Nois Extreme Cool",h:"nois-extreme-cool",str:"Ultra Stark",sl:5,flv:"mint",cost:3.99,sell:5},
+  {id:15,b:"Pablo",n:"Pablo Ice Cold Mini",h:"pablo-ice-cold-mini",str:"Ultra Stark",sl:5,flv:"mint",cost:3.99,sell:5},
+  {id:16,b:"Grant",n:"Grant Extreme Ice Peach",h:"grant-extreme-ice-peach",str:"Ultra Stark",sl:5,flv:"fruit",cost:4.55,sell:6},
+  {id:17,b:"Pablo",n:"Pablo Exclusive Strawberry Lychee",h:"pablo-exklusive-strawberry-lychee",str:"Ultra Stark",sl:5,flv:"fruit",cost:3.99,sell:5},
+  {id:18,b:"Cuba",n:"Cuba White Cherry",h:"cuba-white-cherry",str:"Extra Stark",sl:4,flv:"fruit",cost:4.5,sell:6},
+  {id:19,b:"Pablo",n:"Pablo Exclusive Frosted Ice",h:"pablo-exklusive-frosted-ice",str:"Ultra Stark",sl:5,flv:"mint",cost:3.99,sell:5},
+  {id:20,b:"Pablo",n:"Pablo Exclusive Blue Raspberry",h:"pablo-exclusive-blue-raspberry",str:"Ultra Stark",sl:5,flv:"berry",cost:3.99,sell:5},
+  {id:21,b:"White Fox",n:"White Fox White Slim",h:"fox-white-slim",str:"Extra Stark",sl:4,flv:"mint",cost:4.69,sell:6},
+  {id:22,b:"Nois",n:"Nois Extreme Cherry",h:"nois-extreme-cherry",str:"Ultra Stark",sl:5,flv:"fruit",cost:3.99,sell:5},
+  {id:23,b:"Pablo",n:"Pablo Exclusive Pear",h:"pablo-exclusive-pear",str:"Ultra Stark",sl:5,flv:"fruit",cost:3.99,sell:5},
+  {id:24,b:"Cuba",n:"Cuba Black Peach",h:"cuba-black-peach",str:"Ultra Stark",sl:5,flv:"fruit",cost:4.5,sell:6},
+  {id:25,b:"Cuba",n:"Cuba White Peach",h:"cuba-white-peach",str:"Extra Stark",sl:4,flv:"fruit",cost:4.5,sell:6},
+  {id:26,b:"Pablo",n:"Pablo Exclusive Tropical Punch",h:"pablo-exclusive-tropical-punch",str:"Ultra Stark",sl:5,flv:"fruit",cost:3.99,sell:5},
+  {id:27,b:"Pablo",n:"Pablo Exclusive Lemonade",h:"pablo-exclusive-lemonade",str:"Ultra Stark",sl:5,flv:"fruit",cost:3.99,sell:5},
+  {id:28,b:"Velo",n:"Velo Freezing Peppermint",h:"velo-mighty-peppermint",str:"Extra Stark",sl:4,flv:"mint",cost:5.45,sell:7},
+  {id:29,b:"Grant",n:"Grant Extreme Ice Blueberry",h:"grant-extreme-ice-blueberry",str:"Ultra Stark",sl:5,flv:"berry",cost:4.55,sell:6},
+  {id:30,b:"Pablo",n:"Pablo Exclusive Frosted Mint",h:"pablo-exklusive-frosted-mint",str:"Ultra Stark",sl:5,flv:"mint",cost:3.99,sell:5},
+  {id:31,b:"Cuba",n:"Cuba Black Forest Berries",h:"cuba-black-forest-berries",str:"Ultra Stark",sl:5,flv:"berry",cost:4.5,sell:6},
+  {id:32,b:"Killa",n:"Killa Cola Slim",h:"killa-cola-slim",str:"Extra Stark",sl:4,flv:"other",cost:3.69,sell:5},
+  {id:33,b:"Baron",n:"Baron Fruit Cocktail",h:"baron-fruit-cocktail",str:"Ultra Stark",sl:5,flv:"fruit",cost:4.5,sell:6},
+  {id:34,b:"Iceberg",n:"Iceberg Sour Berries",h:"iceberg-sour-berries",str:"Ultra Stark",sl:5,flv:"berry",cost:4.49,sell:6},
+  {id:35,b:"Nois",n:"Nois Extreme Mango",h:"nois-extreme-mango",str:"Ultra Stark",sl:5,flv:"fruit",cost:3.99,sell:5},
+  {id:36,b:"Pablo",n:"Pablo Exclusive Bubblegum",h:"pablo-exklusive-bubblegum",str:"Ultra Stark",sl:5,flv:"other",cost:3.99,sell:5},
+  {id:37,b:"Pablo",n:"Pablo Exclusive Strawberry Watermelon",h:"pablo-exclusive-strawberry-watermelon",str:"Ultra Stark",sl:5,flv:"fruit",cost:3.99,sell:5},
+  {id:38,b:"Cuba",n:"Cuba White Blueberry",h:"cuba-white-blueberry",str:"Extra Stark",sl:4,flv:"berry",cost:4.5,sell:6},
+  {id:39,b:"Fedrs",n:"Fedrs Hard Evilberry",h:"fedrs-hard-evilberry",str:"Ultra Stark",sl:5,flv:"berry",cost:5.15,sell:7},
+  {id:40,b:"Klint",n:"Klint Freeze Mint",h:"klint-freeze-mint",str:"Extra Stark",sl:4,flv:"mint",cost:2.59,sell:4},
+  {id:41,b:"Garant",n:"Garant Extreme Cherry",h:"garant-extreme-cherry",str:"Ultra Stark",sl:5,flv:"fruit",cost:4.55,sell:6},
+  {id:42,b:"Zeus",n:"Zeus Tropic Burst",h:"zeus-tropic-burst",str:"Ultra Stark",sl:5,flv:"fruit",cost:4.3,sell:6},
+  {id:43,b:"Pablo",n:"Pablo Exclusive Orange",h:"pablo-exclusive-orange",str:"Ultra Stark",sl:5,flv:"fruit",cost:3.99,sell:5},
+  {id:44,b:"Pablo",n:"Pablo Exclusive Banana Ice",h:"pablo-exclusive-banana-hit",str:"Ultra Stark",sl:5,flv:"fruit",cost:3.99,sell:5},
+  {id:45,b:"Pablo",n:"Pablo Exclusive Cherry Cola",h:"pablo-exclusive-cherry-cola",str:"Ultra Stark",sl:5,flv:"other",cost:3.99,sell:5},
+  {id:46,b:"Killa",n:"Killa Apple",h:"killa-apple",str:"Extra Stark",sl:4,flv:"fruit",cost:3.69,sell:5},
+  {id:47,b:"Zeus",n:"Zeus Frozen Citrus",h:"zeus-frozen-citrus",str:"Ultra Stark",sl:5,flv:"fruit",cost:4.3,sell:6},
+  {id:48,b:"Pablo",n:"Pablo Exclusive Dark Cherry",h:"pablo-exclusive-dark-cherry",str:"Ultra Stark",sl:5,flv:"fruit",cost:3.99,sell:5},
+  {id:49,b:"Klint",n:"Klint Polar Mint",h:"klint-polar-mint",str:"Stärker",sl:3,flv:"mint",cost:2.59,sell:4},
+  {id:50,b:"Cuba",n:"Cuba Black Watermelon",h:"cuba-black-watermelon",str:"Ultra Stark",sl:5,flv:"fruit",cost:4.5,sell:6},
+  {id:51,b:"Garant",n:"Garant Extreme Raspberry",h:"garant-extreme-raspberry",str:"Ultra Stark",sl:5,flv:"fruit",cost:4.55,sell:6},
+  {id:52,b:"Killa",n:"Killa Blueberry",h:"killa-blueberry-1",str:"Extra Stark",sl:4,flv:"berry",cost:3.69,sell:5},
+  {id:53,b:"Cuba",n:"Cuba White Forest Berries",h:"cuba-white-forrest-berries",str:"Extra Stark",sl:4,flv:"berry",cost:4.5,sell:6},
+  {id:54,b:"Cuba",n:"Cuba Black Double Fresh",h:"cuba-black-line",str:"Ultra Stark",sl:5,flv:"mint",cost:4.5,sell:6},
+  {id:55,b:"Cuba",n:"Cuba Black Cola",h:"cuba-black-cola",str:"Ultra Stark",sl:5,flv:"other",cost:4.5,sell:6},
+  {id:56,b:"Nois",n:"Nois Ice Cool",h:"nois-ice-cool",str:"Ultra Stark",sl:5,flv:"mint",cost:3.99,sell:5},
+  {id:57,b:"Klint",n:"Klint Apple Mint X-Strong",h:"klint-apple-mint-x-strong",str:"Extra Stark",sl:4,flv:"fruit",cost:2.59,sell:4},
+  {id:58,b:"Glitch",n:"Glitch Frozen Cherry Cola",h:"glitch-cherry-cola",str:"Extra Stark",sl:4,flv:"other",cost:3.25,sell:5},
+  {id:59,b:"Nois",n:"Nois Extreme Grape",h:"nois-extreme-grape",str:"Ultra Stark",sl:5,flv:"berry",cost:3.99,sell:5},
+  {id:60,b:"Cuba",n:"Cuba Black Pineapple",h:"cuba-black-pineapple",str:"Ultra Stark",sl:5,flv:"fruit",cost:4.5,sell:6},
+  {id:61,b:"Apres",n:"Apres Ice Tea Peach",h:"apres-n-5-ice-tea-peach",str:"Extra Stark",sl:4,flv:"fruit",cost:3.15,sell:5},
+  {id:62,b:"Kurwa",n:"Kurwa Fatality Cactus Apple",h:"kurwa-fatality-cactus-apple",str:"Ultra Stark",sl:5,flv:"fruit",cost:4.89,sell:6},
+  {id:63,b:"Fix",n:"Fix Strawberry Kiwi",h:"fix-kiwi-strawberry",str:"Stärker",sl:3,flv:"fruit",cost:2.59,sell:4},
+  {id:64,b:"Pablo",n:"Pablo X Ice Cold",h:"pablo-x-ice-cold",str:"Ultra Stark",sl:5,flv:"mint",cost:3.99,sell:5},
+  {id:65,b:"Kurwa",n:"Kurwa Collection Cola Vanilla Cherry",h:"kurwa-collection-cola-vanilla-cherry-32mg",str:"Extra Stark",sl:4,flv:"other",cost:3.95,sell:5},
+  {id:66,b:"Grant",n:"Grant Wildberry",h:"grant-wildberry",str:"Extra Stark",sl:4,flv:"berry",cost:4.45,sell:6},
+  {id:67,b:"Baron",n:"Baron Menthol",h:"baron-menthol",str:"Ultra Stark",sl:5,flv:"mint",cost:4.5,sell:6},
+  {id:68,b:"Killa",n:"Killa Watermelon",h:"killa-watermelon",str:"Extra Stark",sl:4,flv:"fruit",cost:3.69,sell:5},
+  {id:69,b:"Velo",n:"Velo Breezy Mango",h:"velo-breezy-mango",str:"Extra Stark",sl:4,flv:"fruit",cost:5.45,sell:7},
+  {id:70,b:"Nois",n:"Nois Cool Strong 50",h:"nois-cool-strong-50",str:"Ultra Stark",sl:5,flv:"mint",cost:3.99,sell:5},
+  {id:71,b:"Pablo",n:"Pablo Red",h:"pablo-red",str:"Ultra Stark",sl:5,flv:"other",cost:3.99,sell:5},
+  {id:72,b:"Cuba",n:"Cuba Black Black Currant",h:"cuba-black-black-currant",str:"Ultra Stark",sl:5,flv:"berry",cost:4.5,sell:6},
+  {id:73,b:"Iceberg",n:"Iceberg Emerald",h:"iceberg-emerald",str:"Ultra Stark",sl:5,flv:"mint",cost:4.49,sell:6},
+  {id:74,b:"Zeus",n:"Zeus Epic Berry",h:"zeus-epic-berry",str:"Ultra Stark",sl:5,flv:"berry",cost:4.3,sell:6},
+  {id:75,b:"Cuba",n:"Cuba Coca Leaf",h:"cuba-coca-leaf",str:"Ultra Stark",sl:5,flv:"other",cost:4.5,sell:6},
+  {id:76,b:"Zeus",n:"Zeus Cherry Blossom",h:"zeus-arctic-freeze-copy",str:"Ultra Stark",sl:5,flv:"fruit",cost:4.3,sell:6},
+  {id:77,b:"Zeus",n:"Zeus Arctic Freeze",h:"zeus-arctic-freeze",str:"Ultra Stark",sl:5,flv:"mint",cost:4.3,sell:6},
+  {id:78,b:"Glitch",n:"Glitch Blueberry Ice",h:"glitch-blueberry",str:"Extra Stark",sl:4,flv:"berry",cost:3.25,sell:5},
+  {id:79,b:"Nois",n:"Nois Mini Extreme Blueberry",h:"nois-mini-extreme-blueberry",str:"Ultra Stark",sl:5,flv:"berry",cost:3.99,sell:5},
+  {id:80,b:"Nois",n:"Nois Extreme Watermelon",h:"nois-extreme-watermelon",str:"Ultra Stark",sl:5,flv:"fruit",cost:3.99,sell:5},
+  {id:81,b:"Iceberg",n:"Iceberg Kiwi Strawberry",h:"iceberg-kiwi-strawberry",str:"Ultra Stark",sl:5,flv:"fruit",cost:4.49,sell:6},
+  {id:82,b:"Killa",n:"Killa Cold Mint",h:"killa-cold-mint",str:"Extra Stark",sl:4,flv:"mint",cost:3.69,sell:5},
+  {id:83,b:"Velo",n:"Velo Icy Cherry",h:"velo-icy-cherry",str:"Stärker",sl:3,flv:"fruit",cost:5.45,sell:7},
+  {id:84,b:"Pablo",n:"Pablo X-Ice Cold Mini",h:"pablo-x-ice-cold-mini",str:"Ultra Stark",sl:5,flv:"mint",cost:3.99,sell:5},
+  {id:85,b:"Iceberg",n:"Iceberg Strawberry Mango",h:"iceberg-strawberry-mango",str:"Ultra Stark",sl:5,flv:"fruit",cost:4.49,sell:6},
+  {id:86,b:"Garant",n:"Garant Extreme Ice Cool",h:"garant-extreme-ice-cool",str:"Ultra Stark",sl:5,flv:"mint",cost:4.55,sell:6},
+  {id:87,b:"Grant",n:"Grant Extreme Mango Lime",h:"grant-extreme-mango-lime",str:"Ultra Stark",sl:5,flv:"fruit",cost:4.55,sell:6},
+  {id:88,b:"Garant",n:"Garant Extreme Grape",h:"garant-extreme-grape",str:"Ultra Stark",sl:5,flv:"berry",cost:4.55,sell:6},
+  {id:89,b:"Killa",n:"Killa Grape Ice",h:"killa-grape-ice",str:"Extra Stark",sl:4,flv:"berry",cost:3.69,sell:5},
+  {id:90,b:"Pablo",n:"Pablo Exclusive Blueberry Peach Ice",h:"pablo-exclusive-blueberry-peach-ice",str:"Ultra Stark",sl:5,flv:"berry",cost:3.99,sell:5},
+  {id:91,b:"Cuba",n:"Cuba Ninja Bubblegum",h:"cuba-ninja-bubblegum",str:"Ultra Stark",sl:5,flv:"other",cost:4.5,sell:6},
+  {id:92,b:"Cuba",n:"Cuba Black Apple Juice",h:"cuba-black-apple-juice",str:"Ultra Stark",sl:5,flv:"fruit",cost:4.5,sell:6},
+  {id:93,b:"DOPE",n:"DOPE Lime Smash Slim",h:"dope-lime-smash",str:"Extra Stark",sl:4,flv:"fruit",cost:3.85,sell:5},
+  {id:94,b:"V&YOU",n:"V&YOU Boost+ Cool Berry",h:"v-you-boost-berry",str:"Ultra Stark",sl:5,flv:"berry",cost:3.89,sell:5},
+  {id:95,b:"Cuba",n:"Cuba Black Grape",h:"cuba-black-grape",str:"Ultra Stark",sl:5,flv:"berry",cost:4.5,sell:6},
+  {id:96,b:"White Fox",n:"White Fox Double Mint",h:"fox-double-mint",str:"Extra Stark",sl:4,flv:"mint",cost:4.69,sell:6},
+  {id:97,b:"V&YOU",n:"V&YOU Boost+ Fresh Citrus",h:"v-you-boost-fresh-citrus",str:"Ultra Stark",sl:5,flv:"fruit",cost:3.89,sell:5},
+  {id:98,b:"Cuba",n:"Cuba Ninja Energy",h:"cuba-ninja-energy",str:"Ultra Stark",sl:5,flv:"other",cost:4.5,sell:6},
+  {id:99,b:"Klint",n:"Klint Mint Nr. 1",h:"klint-mint-nr-1",str:"Leicht",sl:1,flv:"mint",cost:3.99,sell:5},
+  {id:100,b:"Zeus",n:"Zeus Mint Rage",h:"zeus-mint-rage",str:"Ultra Stark",sl:5,flv:"mint",cost:4.3,sell:6},
+  {id:101,b:"Velo",n:"Velo Crispy Peppermint",h:"velo-crispy-peppermint",str:"Stärker",sl:3,flv:"mint",cost:5.45,sell:7},
+  {id:102,b:"Nois",n:"Nois Cherry Ice",h:"nois-cherry-ice",str:"Ultra Stark",sl:5,flv:"fruit",cost:3.99,sell:5},
+  {id:103,b:"Fix",n:"Fix Cherry Blossom",h:"fix-cherry-blossom",str:"Extra Stark",sl:4,flv:"fruit",cost:3.85,sell:5},
+  {id:104,b:"Velo",n:"Velo Peppermint Storm",h:"velo-peppermint-storm",str:"Extra Stark",sl:4,flv:"mint",cost:5.45,sell:7},
+  {id:105,b:"Velo",n:"Velo Orange Spark",h:"velo-orange-spark",str:"Stärker",sl:3,flv:"fruit",cost:5.45,sell:7},
+  {id:106,b:"Cuba",n:"Cuba White Lollipop",h:"cuba-white-lollipop",str:"Extra Stark",sl:4,flv:"other",cost:4.5,sell:6},
+  {id:107,b:"Fedrs",n:"Fedrs Hard Raspberry",h:"fedrs-hard-raspberry",str:"Ultra Stark",sl:5,flv:"berry",cost:5.15,sell:7},
+  {id:108,b:"Cuba",n:"Cuba White Double Fresh",h:"cuba-white-line",str:"Extra Stark",sl:4,flv:"mint",cost:4.5,sell:6},
+  {id:109,b:"Iceberg",n:"Iceberg Wildberries",h:"iceberg-berries",str:"Ultra Stark",sl:5,flv:"berry",cost:4.49,sell:6},
+  {id:110,b:"Zeus",n:"Zeus Bubblegum",h:"zeus-bubblegum",str:"Ultra Stark",sl:5,flv:"other",cost:4.3,sell:6},
+  {id:111,b:"Cuba",n:"Cuba White Cola",h:"cuba-white-cola",str:"Extra Stark",sl:4,flv:"other",cost:4.5,sell:6},
+  {id:112,b:"Kurwa",n:"Kurwa Fatality Tropical Cocktail",h:"kurwa-fatality-tropical-cocktail",str:"Ultra Stark",sl:5,flv:"fruit",cost:4.89,sell:6},
+  {id:113,b:"Fix",n:"Fix Blueberry Ice",h:"fix-blueberry-ice",str:"Extra Stark",sl:4,flv:"berry",cost:3.85,sell:5},
+  {id:114,b:"Glitch",n:"Glitch Cool Ice",h:"glitch-cool-ice",str:"Extra Stark",sl:4,flv:"mint",cost:3.89,sell:5},
+  {id:115,b:"Killa",n:"Killa Strawberry Lychee",h:"killa-strawberry-lychee",str:"Extra Stark",sl:4,flv:"fruit",cost:3.69,sell:5},
+  {id:116,b:"Camo",n:"Camo Green Apple",h:"camo-green-apple",str:"Ultra Stark",sl:5,flv:"fruit",cost:3.6,sell:5},
+  {id:117,b:"Kurwa",n:"Kurwa Collection Cocopilada Mango",h:"kurwa-collection-cocopilada-mango-32mg",str:"Stärker",sl:3,flv:"fruit",cost:3.95,sell:5},
+  {id:118,b:"Iceberg",n:"Iceberg Watermelon",h:"iceberg-watermelon",str:"Extra Stark",sl:4,flv:"fruit",cost:4.49,sell:6},
+  {id:119,b:"Garant",n:"Garant Extreme Citrus",h:"garant-extreme-citrus",str:"Ultra Stark",sl:5,flv:"fruit",cost:4.55,sell:6},
+  {id:120,b:"Camo",n:"Camo Spicy Citrus",h:"camo-spicy-citrus",str:"Ultra Stark",sl:5,flv:"other",cost:3.6,sell:5},
+  {id:121,b:"Apres",n:"Apres Spritz",h:"apres-n-10-spritz",str:"Mittelstark",sl:2,flv:"fruit",cost:3.99,sell:5},
+  {id:122,b:"ACE",n:"ACE Cool Mint X",h:"ace-x",str:"Extra Stark",sl:4,flv:"mint",cost:4.99,sell:6},
+  {id:123,b:"Killa",n:"Killa Blue Raspberry",h:"killa-blue-raspberry",str:"Extra Stark",sl:4,flv:"berry",cost:3.69,sell:5},
+  {id:124,b:"Klint",n:"Klint Arctic Mint Max",h:"klint-arctic-mint-max",str:"Extra Stark",sl:4,flv:"mint",cost:4.25,sell:6},
+  {id:125,b:"Velo",n:"Velo Groovy Grape Mini",h:"velo-groovy-grape",str:"Mittelstark",sl:2,flv:"berry",cost:5.45,sell:7},
+  {id:126,b:"Camo",n:"Camo Orange Bubblegum",h:"camo-orange-bubblegum",str:"Ultra Stark",sl:5,flv:"other",cost:3.6,sell:5},
+  {id:127,b:"Fedrs",n:"Fedrs Hard Cola Vanilla",h:"fedrs-hard-cola-vanilla",str:"Ultra Stark",sl:5,flv:"other",cost:5.15,sell:7},
+  {id:128,b:"Nois",n:"Nois Black Currant",h:"nois-black-currant",str:"Extra Stark",sl:4,flv:"berry",cost:3.99,sell:5},
+  {id:129,b:"Pablo",n:"Pablo Exclusive Pink Lemonade",h:"pablo-exclusive-pink-lemonade",str:"Ultra Stark",sl:5,flv:"fruit",cost:3.99,sell:5},
+  {id:130,b:"Cuba",n:"Cuba White Apple Juice",h:"cuba-white-peach-kopie",str:"Extra Stark",sl:4,flv:"fruit",cost:4.5,sell:6},
+  {id:131,b:"Noto",n:"Noto Green Tea",h:"noto-green-tea",str:"Mittelstark",sl:2,flv:"other",cost:4.3,sell:6},
+  {id:132,b:"Edel",n:"Edel Berry Ice",h:"edel-snus-berry-ice",str:"Extra Stark",sl:4,flv:"berry",cost:3.3,sell:5},
+  {id:133,b:"Cuba",n:"Cuba Black Banana",h:"cuba-black-banana-hit",str:"Ultra Stark",sl:5,flv:"fruit",cost:4.5,sell:6},
+  {id:134,b:"Pablo",n:"Pablo Exclusive Sour Blueberries",h:"pablo-exclusive-sour-blueberries",str:"Ultra Stark",sl:5,flv:"berry",cost:3.99,sell:5},
+  {id:135,b:"Fedrs",n:"Fedrs Hard Mint",h:"fedrs-hard-mint",str:"Ultra Stark",sl:5,flv:"mint",cost:5.15,sell:7},
+  {id:136,b:"Pablo",n:"Pablo Gold Edition Tropical Punch",h:"pablo-gold-edition-tropical-punch",str:"Ultra Stark",sl:5,flv:"fruit",cost:3.99,sell:5},
+  {id:137,b:"Noto",n:"Noto Pine",h:"noto-pine-3",str:"Stärker",sl:3,flv:"other",cost:4.3,sell:6},
+  {id:138,b:"Pablo",n:"Pablo Exclusive Strawberry Kiwi",h:"pablo-exclusive-strawberry-kiwi",str:"Ultra Stark",sl:5,flv:"fruit",cost:3.99,sell:5},
+  {id:139,b:"Pablo",n:"Pablo Exclusive Blueberry Cranberry Cherry",h:"pablo-exclusive-blueberry-cranbery-cherry",str:"Ultra Stark",sl:5,flv:"berry",cost:3.99,sell:5},
+  {id:140,b:"Fix",n:"Fix Watermelon Ice",h:"fix-watermelon-ice",str:"Extra Stark",sl:4,flv:"fruit",cost:3.85,sell:5},
+  {id:141,b:"Camo",n:"Camo Wild Mint",h:"camo-grape-slim",str:"Ultra Stark",sl:5,flv:"mint",cost:3.6,sell:5},
+  {id:142,b:"Klint",n:"Klint Fresh Lime",h:"klint-fresh-lime",str:"Mittelstark",sl:2,flv:"fruit",cost:3.99,sell:5},
+  {id:143,b:"Klint",n:"Klint Breeze Mint",h:"klint-breeze-mint-mini",str:"Mittelstark",sl:2,flv:"mint",cost:3.99,sell:5},
+  {id:144,b:"Apres",n:"Apres Hyper Strong Spritz",h:"apres-hyper-strong-apres-spritz",str:"Extra Stark",sl:4,flv:"fruit",cost:3.99,sell:5},
+  {id:145,b:"Garant",n:"Garant Extreme Cola",h:"garant-extreme-cola",str:"Ultra Stark",sl:5,flv:"other",cost:4.55,sell:6},
+  {id:146,b:"Nois",n:"Nois Grape Ice",h:"nois-grape-ice",str:"Ultra Stark",sl:5,flv:"berry",cost:3.99,sell:5},
+  {id:147,b:"V&YOU",n:"V&YOU Boost Berry",h:"v-you-boost-berry-1",str:"Extra Stark",sl:4,flv:"berry",cost:3.89,sell:5},
+  {id:148,b:"NOAT",n:"NOAT Cold Mint",h:"noat-cold-mint",str:"Extra Stark",sl:4,flv:"mint",cost:5.5,sell:7},
+  {id:149,b:"NOAT",n:"NOAT Ginger Peach",h:"noat-ginger-peach",str:"Stärker",sl:3,flv:"fruit",cost:5.5,sell:7},
+  {id:150,b:"NOAT",n:"NOAT Peppermint",h:"noat-peppermint",str:"Stärker",sl:3,flv:"mint",cost:5.5,sell:7},
+  {id:151,b:"NOAT",n:"NOAT Spearmint",h:"noat-spearmint",str:"Mittelstark",sl:2,flv:"mint",cost:5.5,sell:7},
+  {id:152,b:"Greatest",n:"Greatest Cold Dry XL",h:"greatest-cold-dry-xl",str:"Extra Stark",sl:4,flv:"mint",cost:3.99,sell:5},
+  {id:153,b:"Kurwa",n:"Kurwa Collection Grape Ice",h:"kurwa-collection-grape-ice",str:"Extra Stark",sl:4,flv:"berry",cost:3.69,sell:5},
+  {id:154,b:"ACE",n:"ACE X Extended Cool Mint",h:"ace-x-extended-cool-mint",str:"Extra Stark",sl:4,flv:"mint",cost:4.99,sell:6},
+  {id:155,b:"Vont",n:"Vont Fresh Mint Extra Strong",h:"vont-fresh-mint-extra-strong",str:"Ultra Stark",sl:5,flv:"mint",cost:3.99,sell:5},
+  {id:156,b:"Vont",n:"Vont Havana Cola",h:"vont-havana-cola-1",str:"Ultra Stark",sl:5,flv:"other",cost:3.99,sell:5},
+  {id:157,b:"SYX",n:"SYX Blueberry",h:"syx-blueberry",str:"Ultra Stark",sl:5,flv:"berry",cost:2.75,sell:4},
+  {id:158,b:"Nor",n:"Nor No.1 Cool Mint",h:"nor-no-1-cool-mint",str:"Extra Stark",sl:4,flv:"mint",cost:3.45,sell:5},
+  {id:159,b:"Nor",n:"Nor No.2 Peppermint",h:"nor-no-2-peppermint",str:"Extra Stark",sl:4,flv:"mint",cost:3.45,sell:5},
+  {id:160,b:"Nor",n:"Nor No.3 Mint",h:"nor-no-3-mint",str:"Mittelstark",sl:2,flv:"mint",cost:3.45,sell:5},
+  {id:161,b:"Nor",n:"Nor No.4 Strawberry",h:"nor-no-4-strawberry",str:"Stärker",sl:3,flv:"fruit",cost:3.45,sell:5},
+  {id:162,b:"Nor",n:"Nor No.10 Peach",h:"nor-no-10-peach",str:"Mittelstark",sl:2,flv:"fruit",cost:3.45,sell:5},
+  {id:163,b:"Nor",n:"Nor No.23 Ice Mint",h:"nor-no-12-ice-mint",str:"Ultra Stark",sl:5,flv:"mint",cost:3.45,sell:5},
+  {id:164,b:"Nor",n:"Nor Black Grape",h:"nor-black-grape",str:"Extra Stark",sl:4,flv:"berry",cost:3.35,sell:5},
+  {id:165,b:"Nor",n:"Nor Watermelon",h:"nor-watermelon",str:"Extra Stark",sl:4,flv:"fruit",cost:3.35,sell:5},
+  {id:166,b:"Kuma",n:"Kuma Ice Cool",h:"kuma-ice-cool",str:"Ultra Stark",sl:5,flv:"mint",cost:3.99,sell:5},
+  {id:167,b:"Kuma",n:"Kuma Cherry",h:"kuma-cherry",str:"Ultra Stark",sl:5,flv:"fruit",cost:3.25,sell:5},
+  {id:168,b:"Kuma",n:"Kuma Wintergreen",h:"kuma-wintergreen",str:"Ultra Stark",sl:5,flv:"mint",cost:3.25,sell:5},
+  {id:169,b:"Kuma",n:"Kuma Banana Toffee",h:"kuma-banana-toffee",str:"Ultra Stark",sl:5,flv:"fruit",cost:3.25,sell:5},
+  {id:170,b:"Nued",n:"Nued Icy Mint",h:"nued-icy-mint",str:"Stärker",sl:3,flv:"mint",cost:3.99,sell:5},
+  {id:171,b:"Nued",n:"Nued Lemon Lime",h:"nued-lemon-lime",str:"Stärker",sl:3,flv:"fruit",cost:3.99,sell:5},
+  {id:172,b:"Nued",n:"Nued Cola",h:"nued-cola",str:"Stärker",sl:3,flv:"other",cost:3.99,sell:5},
+  {id:173,b:"Nued",n:"Nued Banana",h:"nued-banana",str:"Stärker",sl:3,flv:"fruit",cost:3.99,sell:5},
+  {id:174,b:"Nued",n:"Nued Strawberry",h:"nued-strawberry",str:"Stärker",sl:3,flv:"fruit",cost:3.99,sell:5},
+  {id:175,b:"Klint",n:"Klint Strawberry Mini",h:"klint-strawberry-mini",str:"Extra Stark",sl:4,flv:"fruit",cost:3.99,sell:5},
+  {id:176,b:"Klint",n:"Klint Blueberry Mini",h:"klint-blueberry-mini",str:"Extra Stark",sl:4,flv:"berry",cost:3.99,sell:5},
+  {id:177,b:"Klint",n:"Klint Alaskan Mint",h:"klint-alaskan-mint",str:"Ultra Stark",sl:5,flv:"mint",cost:3.99,sell:5},
+  {id:178,b:"Velo",n:"Velo Dark Blackcurrant",h:"velo-dark-blackcurrant",str:"Stärker",sl:3,flv:"berry",cost:5.45,sell:7},
+  {id:179,b:"Velo",n:"Velo Bright Peppermint",h:"velo-bright-peppermint",str:"Stärker",sl:3,flv:"mint",cost:5.45,sell:7},
+  {id:180,b:"Edel",n:"Edel Berry",h:"edel-snus-berry",str:"Stärker",sl:3,flv:"berry",cost:4.39,sell:6},
+  {id:181,b:"Edel",n:"Edel Onyx",h:"edel-snus-onyx",str:"Ultra Stark",sl:5,flv:"other",cost:4.39,sell:6},
+  {id:182,b:"Loop",n:"Loop Fresh Spearmint Hyper Strong",h:"loop-fresh-spearmint-hyper-strong",str:"Ultra Stark",sl:5,flv:"mint",cost:5.1,sell:7},
+  {id:183,b:"Loop",n:"Loop Red Chili Melon",h:"loop-red-chili-mini",str:"Extra Stark",sl:4,flv:"other",cost:5.1,sell:7},
+  {id:184,b:"Klint",n:"Klint Mint Nr 2",h:"klint-mint-nr-2",str:"Leicht",sl:1,flv:"mint",cost:3.99,sell:5},
+  {id:185,b:"Apres",n:"Apres Hyper Strong Menthol",h:"apres-hyper-strong-menthol",str:"Extra Stark",sl:4,flv:"mint",cost:3.39,sell:5},
+  {id:186,b:"Apres",n:"Apres Blueberry Hyper Strong",h:"apres-no-12-blueberry-hyper-strong",str:"Extra Stark",sl:4,flv:"berry",cost:3.39,sell:5},
+  {id:187,b:"Kurwa",n:"Kurwa Fatality Blueberry",h:"kurwa-blueberry",str:"Ultra Stark",sl:5,flv:"berry",cost:4.89,sell:6},
+  {id:188,b:"Zeus",n:"Zeus Pineapple Ice",h:"zeus-pineapple-ice",str:"Ultra Stark",sl:5,flv:"fruit",cost:4.3,sell:6},
+  {id:189,b:"Iceberg",n:"Iceberg Cherry",h:"iceberg-cherry",str:"Ultra Stark",sl:5,flv:"fruit",cost:4.49,sell:6},
+  {id:190,b:"Cuba",n:"Cuba White Mint",h:"cuba-white-mint",str:"Extra Stark",sl:4,flv:"mint",cost:4.5,sell:6},
+  {id:191,b:"Garant",n:"Garant Extreme Pineapple",h:"garant-extreme-pineapple",str:"Ultra Stark",sl:5,flv:"fruit",cost:4.55,sell:6},
+  {id:192,b:"V&YOU",n:"V&YOU Focus Berry",h:"v-you-focus-berry",str:"Mittelstark",sl:2,flv:"berry",cost:3.89,sell:5},
+  {id:193,b:"V&YOU",n:"V&YOU Focus Mint",h:"v-you-focus-mint",str:"Mittelstark",sl:2,flv:"mint",cost:3.89,sell:5},
+  {id:194,b:"Greatest",n:"Greatest Mango",h:"greatest-wasted-limited-edition",str:"Extra Stark",sl:4,flv:"fruit",cost:3.99,sell:5},
+  {id:195,b:"Kurwa",n:"Kurwa Collection Berries Forest",h:"kurwa-collection-berries-forest-berries-25mg",str:"Stärker",sl:3,flv:"berry",cost:3.95,sell:5}
+];
+
+// ══ EMOJIS by flavour ══
+const EMO={mint:['❄️','🌿','🌬️','🧊'],berry:['🫐','🍇','🍒','🍓'],fruit:['🍑','🥭','🍋','🍊','🍌','🥝','🍉','🌺'],other:['🌶️','🥤','⚫','🍹','💎']};
+function emo(p){const a=EMO[p.flv]||EMO.other;return a[p.id%a.length];}
+const SL=['Nic-Free','Light','Medium','Strong','Extra Strong','Ultra Strong'];
+const FL={mint:'🌿 Mint',berry:'🫐 Berry',fruit:'🍑 Fruit',other:'🌶️ Other'};
+
+// ══ IMAGE CACHE ══
+const IC={};
+async function getImg(h){
+  if(h in IC)return IC[h];
+  IC[h]=null;
+  try{
+    const r=await fetch(`https://snuzone.com/products/${h}.js`);
+    if(!r.ok)throw 0;
+    const d=await r.json();
+    const raw=d.featured_image||(d.images&&d.images[0]&&d.images[0].src)||null;
+    IC[h]=raw?('https:'+raw).replace(/\?.*/,'')+('?width=400'):null;
+  }catch(e){IC[h]=null;}
+  return IC[h];
+}
+
+// ══ STATE ══
+const F={cat:'all',str:'all',flv:'all',brd:'all'};
+let SORT='def',cartOpen=false,CART={};
+
+function matches(p){
+  const q=(document.getElementById('searchInput').value||'').toLowerCase();
+  if(q&&!(p.b.toLowerCase().includes(q)||p.n.toLowerCase().includes(q)||p.flv.includes(q)||p.str.toLowerCase().includes(q)))return false;
+  if(F.cat==='sale'&&p.sell<=p.cost+1)return false;
+  if(F.str!=='all'&&p.str!==F.str)return false;
+  if(F.flv!=='all'&&p.flv!==F.flv)return false;
+  if(F.brd!=='all'&&p.b!==F.brd)return false;
+  return true;
+}
+function getSorted(){
+  const a=[...P];
+  if(SORT==='asc')a.sort((x,y)=>x.sell-y.sell);
+  else if(SORT==='desc')a.sort((x,y)=>y.sell-x.sell);
+  else if(SORT==='az')a.sort((x,y)=>(x.b+x.n).localeCompare(y.b+y.n));
+  return a;
+}
+
+// ══ RENDER ══
+function rf(){
+  const g=document.getElementById('grid');
+  const vis=getSorted().filter(matches);
+  document.getElementById('cnt').textContent=vis.length;
+  renderChips();
+  if(!vis.length){g.innerHTML=`<div class="nores"><span class="ni">🔍</span><p>No products found.</p></div>`;return;}
+  g.innerHTML=vis.map(buildCard).join('');
+  vis.forEach(loadCImg);
+}
+
+function buildCard(p){
+  const sc='s'+p.sl,em=emo(p);
+  const onSale=p.sell>p.cost+1;
+  return `<div class="card" onclick="openMod(${p.id})">
+    ${onSale?`<div class="bdg bsale">SALE</div>`:''}
+    <div class="cimg shim" id="cw${p.id}"><div class="ceph" id="ce${p.id}">${em}</div></div>
+    <div class="cbody">
+      <div class="cbrnd">${p.b}</div>
+      <div class="cname">${p.n}</div>
+      <div class="ctags"><span class="tag ${sc}">${SL[p.sl]}</span><span class="tag tf">${FL[p.flv]}</span></div>
+      <div class="cbot">
+        <div><div class="cpr">€${p.sell}</div><div class="cnic">${p.str}</div></div>
+        <button class="add-btn" onclick="event.stopPropagation();addCart(${p.id})" title="Add to order">＋</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+async function loadCImg(p){
+  const w=document.getElementById('cw'+p.id),e=document.getElementById('ce'+p.id);
+  if(!w)return;
+  const url=await getImg(p.h);
+  if(!document.getElementById('cw'+p.id))return;
+  w.classList.remove('shim');
+  if(url){
+    const img=new Image();img.alt=p.n;img.loading='lazy';
+    img.onload=()=>{img.classList.add('in');if(e&&e.parentNode===w)e.style.opacity='0';};
+    img.onerror=()=>{};
+    img.src=url;w.appendChild(img);
+  }
+}
+
+// ══ MODAL ══
+let modP=null;
+function openMod(id){
+  const p=P.find(x=>x.id===id);if(!p)return;modP=p;
+  const mi=document.getElementById('mImg');
+  mi.innerHTML=`<div class="meph" id="mph">${emo(p)}</div>`;
+  getImg(p.h).then(url=>{
+    if(!url)return;
+    const img=new Image();
+    img.style.cssText='max-width:100%;max-height:100%;object-fit:contain;padding:14px;position:absolute;opacity:0;transition:opacity .3s';
+    img.onload=()=>{img.style.opacity='1';const ph=document.getElementById('mph');if(ph)ph.style.opacity='0';};
+    img.src=url;mi.appendChild(img);
+  });
+  document.getElementById('mBrand').textContent=p.b;
+  document.getElementById('mName').textContent=p.n;
+  const sc='s'+p.sl;
+  document.getElementById('mTags').innerHTML=`<span class="tag ${sc}" style="font-size:.72rem;padding:3px 9px">${SL[p.sl]}</span><span class="tag tf" style="font-size:.72rem;padding:3px 9px">${FL[p.flv]}</span>`;
+  document.getElementById('mSpec').innerHTML=`
+    <div class="sr"><span class="sl2">Brand</span><span class="sv">${p.b}</span></div>
+    <div class="sr"><span class="sl2">Strength</span><span class="sv">${p.str}</span></div>
+    <div class="sr"><span class="sl2">Flavour</span><span class="sv">${FL[p.flv]}</span></div>`;
+  document.getElementById('mPrice').textContent='€'+p.sell;
+  document.getElementById('mCost').textContent='snuzone.com price: €'+p.cost;
+  document.getElementById('ovl').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+function closeMod(){document.getElementById('ovl').classList.remove('open');document.body.style.overflow='';modP=null;}
+function ovlClick(e){if(e.target===document.getElementById('ovl'))closeMod();}
+document.getElementById('mAddBtn').onclick=()=>{if(modP){addCart(modP.id);closeMod();}};
+
+// ══ CART ══
+function addCart(id){
+  const p=P.find(x=>x.id===id);if(!p)return;
+  CART[id]?CART[id].qty++:CART[id]={p,qty:1};
+  renderCart();toast(`${p.b} ${p.n} added`,'ok');
+  if(!cartOpen)toggleCart();
+}
+function rmCart(id){delete CART[id];renderCart();}
+function chgQty(id,d){if(!CART[id])return;CART[id].qty+=d;if(CART[id].qty<=0)delete CART[id];renderCart();}
+function cartList(){return Object.values(CART);}
+function cartTot(){return cartList().reduce((s,c)=>s+c.p.sell*c.qty,0);}
+function cartCnt(){return cartList().reduce((s,c)=>s+c.qty,0);}
+function clearCart(){CART={};renderCart();toast('Order cleared','inf');}
+
+function renderCart(){
+  const items=cartList(),cnt=cartCnt();
+  const n=document.getElementById('cartN');
+  n.textContent=cnt;n.classList.toggle('hide',cnt===0);
+  const ftr=document.getElementById('cartFtr'),emp=document.getElementById('cartEmpty'),ci=document.getElementById('cartItems');
+  if(!items.length){emp.style.display='flex';ftr.style.display='none';ci.querySelectorAll('.ci').forEach(e=>e.remove());return;}
+  emp.style.display='none';ftr.style.display='block';
+  document.getElementById('cartTotal').textContent='€'+cartTot();
+  ci.querySelectorAll('.ci').forEach(e=>e.remove());
+  items.forEach(it=>{
+    const d=document.createElement('div');d.className='ci';d.id='ci-'+it.p.id;
+    d.innerHTML=`<div class="cithumb" id="ct${it.p.id}">${emo(it.p)}</div>
+      <div class="ciinfo">
+        <div class="cibrnd">${it.p.b}</div>
+        <div class="ciname">${it.p.n}</div>
+        <div class="ciprice">€${it.p.sell} × ${it.qty} = €${it.p.sell*it.qty}</div>
+      </div>
+      <div class="ciqty">
+        <button class="qbtn" onclick="chgQty(${it.p.id},-1)">−</button>
+        <span class="qnum">${it.qty}</span>
+        <button class="qbtn" onclick="chgQty(${it.p.id},1)">＋</button>
+      </div>
+      <button class="cirm" onclick="rmCart(${it.p.id})">✕</button>`;
+    ci.insertBefore(d,ftr);
+    getImg(it.p.h).then(url=>{
+      const tw=document.getElementById('ct'+it.p.id);
+      if(!tw||!url)return;
+      const img=new Image();img.style.cssText='width:100%;height:100%;object-fit:contain;padding:3px';
+      img.src=url;tw.innerHTML='';tw.appendChild(img);
+    });
+  });
+}
+
+function toggleCart(){cartOpen=!cartOpen;document.getElementById('cartDrw').classList.toggle('open',cartOpen);document.getElementById('mainArea').classList.toggle('co',cartOpen);}
+
+// ══ EXPORT ══
+function buildTxt(){
+  const items=cartList();
+  const name=document.getElementById('cName').value.trim();
+  const phone=document.getElementById('cPhone').value.trim();
+  const note=document.getElementById('cNote').value.trim();
+  const now=new Date().toLocaleString('de-DE');
+  let t='';
+  t+='━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n';
+  t+='           SNUS ORDER\n';
+  t+='━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n';
+  t+=`Date:    ${now}\n`;
+  if(name)t+=`Name:    ${name}\n`;
+  if(phone)t+=`Phone:   ${phone}\n`;
+  t+='--------------------------------------\n';
+  items.forEach(ci=>{
+    t+=`  ${ci.p.b} — ${ci.p.n}\n`;
+    t+=`    ${ci.p.str}   Qty: ${ci.qty} × €${ci.p.sell} = €${ci.p.sell*ci.qty}\n\n`;
+  });
+  t+='--------------------------------------\n';
+  t+=`TOTAL:   €${cartTot()}\n`;
+  t+='━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n';
+  if(note)t+=`Notes: ${note}\n`;
+  return t;
+}
+function exportOrder(){
+  if(!cartList().length)return;
+  const txt=buildTxt();
+  const blob=new Blob([txt],{type:'text/plain;charset=utf-8'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  const nm=document.getElementById('cName').value.trim();
+  a.download=`snus-order${nm?'-'+nm.replace(/\s+/g,'_'):''}-${new Date().toISOString().slice(0,10)}.txt`;
+  a.href=url;a.click();URL.revokeObjectURL(url);
+  toast('Order downloaded!','ok');
+}
+function copyOrder(){
+  if(!cartList().length)return;
+  navigator.clipboard.writeText(buildTxt()).then(()=>toast('Copied to clipboard!','ok')).catch(()=>{
+    const ta=document.createElement('textarea');ta.value=buildTxt();ta.style.cssText='position:fixed;opacity:0';
+    document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);
+    toast('Copied!','ok');
+  });
+}
+
+// ══ FILTERS ══
+function setF(k,v,btn){
+  F[k]=v;
+  document.querySelectorAll(`[data-k="${k}"]`).forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');rf();
+}
+function setSort(m,btn){SORT=m;document.querySelectorAll('.sbtn').forEach(b=>b.classList.remove('on'));btn.classList.add('on');rf();}
+function clearAll(){
+  Object.keys(F).forEach(k=>F[k]='all');
+  document.getElementById('searchInput').value='';
+  document.querySelectorAll('[data-v="all"]').forEach(b=>b.classList.add('on'));
+  document.querySelectorAll('[data-v]:not([data-v="all"])').forEach(b=>b.classList.remove('on'));
+  rf();
+}
+const FLBLM={cat:{sale:'On Sale'},str:{Leicht:'Light',Mittelstark:'Medium','Stärker':'Strong','Extra Stark':'Extra Strong','Ultra Stark':'Ultra Strong'},flv:{mint:'Mint',berry:'Berry',fruit:'Fruit',other:'Other'},brd:{}};
+function renderChips(){
+  const bar=document.getElementById('chips');
+  let h='';
+  for(const[k,v]of Object.entries(F)){
+    if(v==='all')continue;
+    const l=(FLBLM[k]&&FLBLM[k][v])||v;
+    h+=`<div class="chip">${l}<button class="cx" onclick="setF('${k}','all',document.querySelector('[data-k=\\'${k}\\'][data-v=\\'all\\']'))">✕</button></div>`;
+  }
+  const q=document.getElementById('searchInput').value;
+  if(q)h+=`<div class="chip">🔍 "${q}"<button class="cx" onclick="document.getElementById('searchInput').value='';rf()">✕</button></div>`;
+  bar.innerHTML=h;bar.style.marginBottom=h?'12px':'0';
+}
+
+// ══ TOAST ══
+let tT=null;
+function toast(msg,type){
+  const t=document.getElementById('toast'),ti=document.getElementById('ti'),tm=document.getElementById('tm');
+  ti.className=type==='ok'?'ti-ok':'ti-inf';ti.textContent=type==='ok'?'✓':'ℹ';tm.textContent=msg;
+  t.classList.add('show');if(tT)clearTimeout(tT);tT=setTimeout(()=>t.classList.remove('show'),2200);
+}
+
+// ══ 14-DAY ORDER TIMER ══
+// Starting point: set first order date here (YYYY, M-1, D, H, MIN)
+// Every 14 days from this anchor a new order cycle starts.
+const ANCHOR = new Date(2026, 2, 22, 20, 0, 0); // Mar 22 2026, 8pm — change this to your actual next order date
+
+function getNextOrderDate(){
+  const now=Date.now(),a=ANCHOR.getTime(),cycle=14*24*60*60*1000;
+  let next=a;
+  while(next<=now)next+=cycle;
+  return new Date(next);
+}
+function updateTimer(){
+  const next=getNextOrderDate();
+  const diff=next-Date.now();
+  if(diff<=0){updateTimer();return;}
+  const days=Math.floor(diff/(86400000));
+  const hrs=Math.floor((diff%86400000)/3600000);
+  const mins=Math.floor((diff%3600000)/60000);
+  const secs=Math.floor((diff%60000)/1000);
+  document.getElementById('tD').textContent=String(days).padStart(2,'0');
+  document.getElementById('tH').textContent=String(hrs).padStart(2,'0');
+  document.getElementById('tM').textContent=String(mins).padStart(2,'0');
+  document.getElementById('tS').textContent=String(secs).padStart(2,'0');
+  const msg=document.getElementById('timerMsg');
+  if(days===0&&hrs<4){msg.className='timer-msg timer-urgent';msg.textContent='⚠ Last chance to order!';}
+  else if(days===0){msg.className='timer-msg timer-urgent';msg.textContent=`— order deadline TODAY`;}
+  else{msg.className='timer-msg';msg.textContent=`— ${next.toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short'})}`;}
+}
+setInterval(updateTimer,1000);updateTimer();
+
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeMod();if(cartOpen)toggleCart();}});
+rf();
+</script>
+</body>
+</html>
