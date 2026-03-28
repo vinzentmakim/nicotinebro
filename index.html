@@ -614,6 +614,7 @@ main.co{margin-right:var(--cart)}
   <div class="tabs">
     <button class="tab as" id="tabS" onclick="switchTab('snus')">🌿 Snus</button>
     <button class="tab" id="tabV" onclick="switchTab('vape')">💨 Vapes</button>
+    <button class="tab" id="tabB" onclick="switchTab('bulk')">📦 Bulk</button>
   </div>
   <div class="search-wrap">
     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
@@ -742,7 +743,7 @@ main.co{margin-right:var(--cart)}
     <!-- VAPE SECTION -->
     <div class="sec" id="secV">
       <div class="topbar">
-        <div class="pgtitle">Disposable Vapes <span class="pgsub">— gleevape.com</span></div>
+        <div class="pgtitle">Disposable Vapes</div>
         <div class="srow">
           <button class="sbtn on" onclick="setVSort('def',this)">Default</button>
           <button class="sbtn" onclick="setVSort('az',this)">A–Z</button>
@@ -756,9 +757,7 @@ main.co{margin-right:var(--cart)}
             <th>DEVICE</th>
             <th>PUFFS</th>
             <th>FLAVORS</th>
-            <th>YOUR COST</th>
-            <th>SELL</th>
-            <th>PROFIT</th>
+            <th>PRICE</th>
           </tr>
         </thead>
         <tbody>
@@ -766,31 +765,69 @@ main.co{margin-right:var(--cart)}
             <td>VOPK Cool Bar 20000</td>
             <td>20,000</td>
             <td>10 flavours</td>
-            <td class="vt-price">~€6</td>
             <td class="vt-sell">€20</td>
-            <td class="vt-profit">~€14</td>
           </tr>
           <tr>
             <td>WASPE FIHP 40000 🔄</td>
             <td>40,000</td>
             <td>Double Taste</td>
-            <td class="vt-price">~€8</td>
             <td class="vt-sell">€30</td>
-            <td class="vt-profit">~€22</td>
           </tr>
           <tr>
             <td>WASPE 4-in-1 100000 🌟</td>
             <td>100,000</td>
             <td>4-in-1</td>
-            <td class="vt-price">~€9</td>
             <td class="vt-sell">€50</td>
-            <td class="vt-profit">~€41</td>
           </tr>
         </tbody>
       </table>
 
       <div id="vchips" style="margin-bottom:10px"></div>
       <div id="vgrid"></div>
+    </div>
+
+    <!-- BULK SECTION -->
+    <div class="sec" id="secB">
+      <div class="topbar">
+        <div class="pgtitle">Bulk Orders &amp; Wholesale</div>
+      </div>
+      
+      <div style="background:var(--ink3); border:1px solid var(--gold4); border-radius:12px; padding:20px; margin-bottom:20px; text-align:center; box-shadow: 0 4px 12px rgba(0,0,0,0.3);">
+        <h3 style="color:var(--gold2); font-family:'Cormorant Garamond', serif; font-size:1.6rem; margin-bottom:10px;">Need high volumes?</h3>
+        <p style="color:var(--cream2); font-size:0.95rem; line-height:1.6; margin-bottom:16px;">
+          I supply all the Snus brands and Disposable Vapes listed in the retail catalogue at competitive wholesale rates.<br>
+          <span style="font-size:0.8rem; opacity:0.8;">(Minimum order quantities apply to access bulk pricing)</span>
+        </p>
+        <div style="display:inline-block; background:rgba(191,155,78,0.15); border:1px solid var(--gold); border-radius:8px; padding:14px 28px;">
+          <strong style="color:var(--gold); font-size:1.1rem;">Contact me on Snapchat to negotiate prices!</strong><br>
+          <span style="color:var(--cream); font-size:1.3rem; font-weight:bold; letter-spacing:1px; margin-top:8px; display:inline-block;"><a href="https://snapchat.com/add/vaposbro" style="color:var(--cream); text-decoration:none;" target="_blank">@vaposbro</a></span>
+        </div>
+      </div>
+
+      <h3 style="color:var(--cream); border-bottom:1px solid var(--line); padding-bottom:8px; margin:32px 0 16px; font-family:'Cormorant Garamond', serif; font-size:1.3rem;">What we supply in bulk</h3>
+      
+      <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(200px, 1fr)); gap:12px;">
+         <div class="card" style="padding:20px; text-align:center; pointer-events:none;">
+           <div style="font-size:2.5rem; margin-bottom:10px;">🌿</div>
+           <div style="font-weight:bold; color:var(--gold2); font-size:1.1rem; margin-bottom:6px;">All Snus Brands</div>
+           <div style="font-size:0.8rem; color:var(--cream3);">Pablo, Killa, Velo, Cuba, Iceberg, Baron &amp; more.</div>
+         </div>
+         <div class="card" style="padding:20px; text-align:center; pointer-events:none;">
+           <div style="font-size:2.5rem; margin-bottom:10px;">🧊</div>
+           <div style="font-weight:bold; color:#4a7fc9; font-size:1.1rem; margin-bottom:6px;">VOPK 20000 Puffs</div>
+           <div style="font-size:0.8rem; color:var(--cream3);">10+ Flavours Available<br>Digital Display</div>
+         </div>
+         <div class="card" style="padding:20px; text-align:center; pointer-events:none;">
+           <div style="font-size:2.5rem; margin-bottom:10px;">🔄</div>
+           <div style="font-weight:bold; color:#9b4ec9; font-size:1.1rem; margin-bottom:6px;">WASPE 40000 Puffs</div>
+           <div style="font-size:0.8rem; color:var(--cream3);">Double-Taste System<br>Switchable Flavours</div>
+         </div>
+         <div class="card" style="padding:20px; text-align:center; pointer-events:none;">
+           <div style="font-size:2.5rem; margin-bottom:10px;">🌟</div>
+           <div style="font-weight:bold; color:#c9a44e; font-size:1.1rem; margin-bottom:6px;">WASPE 100000 Puffs</div>
+           <div style="font-size:0.8rem; color:var(--cream3);">4-in-1 Flavours<br>Premium Device</div>
+         </div>
+      </div>
     </div>
 
   </main>
@@ -1099,16 +1136,23 @@ function switchTab(t){
   TAB=t;
   document.getElementById('tabS').className='tab'+(t==='snus'?' as':'');
   document.getElementById('tabV').className='tab'+(t==='vape'?' av':'');
+  const tB=document.getElementById('tabB'); if(tB)tB.className='tab'+(t==='bulk'?' as':'');
+
   document.getElementById('secS').className='sec'+(t==='snus'?' act':'');
   document.getElementById('secV').className='sec'+(t==='vape'?' act':'');
-  document.getElementById('snusF').style.display=t==='snus'?'block':'none';
-  document.getElementById('vapeF').style.display=t==='vape'?'block':'none';
+  const sB=document.getElementById('secB'); if(sB)sB.className='sec'+(t==='bulk'?' act':'');
+
+  const sf=document.getElementById('snusF'); if(sf)sf.style.display=t==='snus'?'block':'none';
+  const vf=document.getElementById('vapeF'); if(vf)vf.style.display=t==='vape'?'block':'none';
   document.getElementById('si').value='';
   rf();
 }
 
 // ═══════════════════ RENDER ═══════════════════
-function rf(){TAB==='snus'?renderSnus():renderVapes();}
+function rf(){
+  if(TAB==='snus') renderSnus();
+  else if(TAB==='vape') renderVapes();
+}
 
 // SNUS
 function matchS(p){
@@ -1206,7 +1250,7 @@ function renderVapes(){
         <div class="puff-bar"><div class="puff-fill" style="width:${pct}%;background:linear-gradient(90deg,${dev.col},${dev.col}88)"></div></div>
       </div>
       <div class="cbody">
-        <div class="cbrnd vb">${dev.brand} · gleevape.com</div>
+        <div class="cbrnd vb">${dev.brand}</div>
         <div class="cname">${dev.name}</div>
         <div class="ctags">
           <span class="tag" style="background:${dev.col}18;color:${dev.col};border:1px solid ${dev.col}44">${dev.feature}</span>
@@ -1240,7 +1284,7 @@ function openMod(type,id){
     document.getElementById('mTags').innerHTML=`<span class="tag ${sc}" style="font-size:.72rem;padding:3px 9px">${SL[p.sl]}</span><span class="tag tf" style="font-size:.72rem;padding:3px 9px">${FL[p.flv]}</span>`;
     document.getElementById('mSpec').innerHTML=`<div class="sr"><span class="sl2">Brand</span><span class="sv">${p.b}</span></div><div class="sr"><span class="sl2">Strength</span><span class="sv">${p.str}</span></div><div class="sr"><span class="sl2">Flavour</span><span class="sv">${FL[p.flv]}</span></div>`;
     document.getElementById('mPr').textContent='€'+p.sell;document.getElementById('mPr').className='mpr';
-    document.getElementById('mCost').textContent='snuzone.com: €'+p.cost;
+    document.getElementById('mCost').textContent='';
     document.getElementById('mAdd').className='madd';
   }
   document.getElementById('ovl').classList.add('open');document.body.style.overflow='hidden';
@@ -1255,7 +1299,7 @@ function openModVape(id){
     <div style="font-size:.7rem;font-weight:700;color:${dev.col};letter-spacing:.1em;text-transform:uppercase">${dev.brand}</div>
     <div style="font-size:.55rem;color:#4a7fc9;margin-top:3px">${dev.puffs.toLocaleString()} Puffs</div>
   </div>`;
-  document.getElementById('mBrnd').textContent=dev.brand+' · gleevape.com';document.getElementById('mBrnd').className='mbrnd vb';
+  document.getElementById('mBrnd').textContent=dev.brand;document.getElementById('mBrnd').className='mbrnd vb';
   document.getElementById('mName').textContent=dev.name;
   document.getElementById('mTags').innerHTML=`<span class="tag" style="background:${dev.col}18;color:${dev.col};border:1px solid ${dev.col}44;font-size:.7rem;padding:3px 9px">${dev.feature}</span>`;
   const flvList=dev.flvs.map(f=>f.n).join(', ');
@@ -1267,11 +1311,9 @@ function openModVape(id){
     <div class="sr"><span class="sl2">Nicotine</span><span class="sv">${dev.nic}</span></div>
     <div class="sr"><span class="sl2">Display</span><span class="sv">${dev.screen}</span></div>
     <div class="sr"><span class="sl2">Flavours</span><span class="sv">${dev.flavorType}</span></div>
-    <div class="sr"><span class="sl2">Flavour options</span><span class="sv" style="font-size:.72rem;color:var(--cream2)">${flvList}</span></div>
-    <div class="sr"><span class="sl2">Your cost (100 pcs)</span><span class="sv">~€${dev.cost}–${dev.cost+1}</span></div>
-    <div class="sr"><span class="sl2">Profit per unit</span><span class="sv" style="color:var(--green)">~€${dev.sell-dev.cost-1}–${dev.sell-dev.cost+1}</span></div>`;
+    <div class="sr"><span class="sl2">Flavour options</span><span class="sv" style="font-size:.72rem;color:var(--cream2)">${flvList}</span></div>`;
   document.getElementById('mPr').textContent='€'+dev.sell;document.getElementById('mPr').className='mpr vp';
-  document.getElementById('mCost').textContent='Order from gleevape.com';
+  document.getElementById('mCost').textContent='';
   document.getElementById('mAdd').className='madd vp';
   document.getElementById('ovl').classList.add('open');document.body.style.overflow='hidden';
 }
@@ -1378,7 +1420,7 @@ function buildTxt(){
     t+=`\n   Snus subtotal: €${snusI.reduce((s,c)=>s+c.price*c.qty,0)}\n\n`;
   }
   if(vapeI.length){
-    t+='💨 VAPES — order from gleevape.com\n';
+    t+='💨 VAPES\n';
     t+='──────────────────────────────────────\n';
     vapeI.forEach((ci,i)=>{
       t+=`${i+1}. ${ci.brand} ${ci.name}\n   Qty: ${ci.qty} × €${ci.price} = €${ci.price*ci.qty}\n   ⚠ Specify: flavour\n\n`;
