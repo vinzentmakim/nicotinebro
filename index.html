@@ -1,0 +1,1702 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Catalogue</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=Syne:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --ink:#09090b;--ink2:#111115;--ink3:#18181e;--ink4:#222229;
+  --line:#2e2e38;--line2:#3d3d4a;
+  --gold:#bf9b4e;--gold2:#d9b96a;--gold3:rgba(191,155,78,.1);--gold4:rgba(191,155,78,.22);
+  --cream:#f0ece3;--cream2:#b8b4aa;--cream3:#6e6b65;
+  --red:#c94545;--green:#3d9e6a;--blue:#4a7fc9;--blue2:rgba(74,127,201,.1);--blue3:rgba(74,127,201,.22);
+  --r:11px;
+  --sidebar:248px;
+  --hdr:56px;
+  --cart:360px;
+  --timer-h:80px; /* two rows */
+}
+html{font-size:14px;scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{font-family:'Syne',sans-serif;background:var(--ink);color:var(--cream);min-height:100vh;overflow-x:hidden}
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-track{background:var(--ink2)}
+::-webkit-scrollbar-thumb{background:var(--line2);border-radius:4px}
+
+/* ══════════════════════════════════════
+   TIMER BANNER
+══════════════════════════════════════ */
+#timers{
+  position:fixed;top:0;left:0;right:0;z-index:600;
+  height:var(--timer-h);display:flex;flex-direction:column;
+}
+.tbrow{
+  flex:1;display:flex;align-items:center;justify-content:center;gap:8px;
+  border-bottom:1px solid var(--line);
+  padding:0 12px;
+}
+.tbrow.ts{background:linear-gradient(90deg,#110e03,#1e1805,#110e03)}
+.tbrow.tv{background:linear-gradient(90deg,#030b11,#051520,#030b11)}
+.tlbl{
+  font-size:.58rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;
+  padding:2px 7px;border-radius:4px;white-space:nowrap;flex-shrink:0;
+}
+.tlbl.sg{background:rgba(191,155,78,.15);color:var(--gold)}
+.tlbl.vp{background:rgba(74,127,201,.15);color:#7ab0e8}
+.tblks{display:flex;align-items:center;gap:3px}
+.tbl{
+  background:rgba(0,0,0,.35);border:1px solid rgba(255,255,255,.08);
+  border-radius:5px;padding:2px 6px;text-align:center;min-width:38px;
+}
+.tn{font-family:'Cormorant Garamond',serif;font-size:.95rem;font-weight:700;line-height:1.1}
+.tn.sg{color:var(--gold2)}.tn.vp{color:#7ab0e8}
+.ttl{font-size:.45rem;letter-spacing:.1em;text-transform:uppercase;color:var(--cream3)}
+.tsep{font-size:.8rem;opacity:.4}
+.tsep.sg{color:var(--gold)}.tsep.vp{color:var(--blue)}
+.tmsg{font-size:.62rem;color:var(--cream3);margin-left:3px;flex-shrink:0}
+.tmsg.urg{color:var(--red)!important;font-weight:700}
+
+/* ══════════════════════════════════════
+   HEADER
+══════════════════════════════════════ */
+header{
+  position:fixed;top:var(--timer-h);left:0;right:0;z-index:500;
+  height:var(--hdr);
+  background:rgba(9,9,11,.97);backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--line);
+  display:flex;align-items:center;padding:0 14px;gap:10px;
+}
+.logo{
+  font-family:'Cormorant Garamond',serif;
+  font-size:1.15rem;font-weight:700;color:var(--cream);
+  white-space:nowrap;letter-spacing:.04em;flex-shrink:0;
+}
+.logo span{color:var(--gold);font-style:italic}
+.tabs{
+  display:flex;gap:2px;background:var(--ink3);
+  border:1px solid var(--line);border-radius:8px;padding:3px;flex-shrink:0;
+}
+.tab{
+  padding:5px 11px;border-radius:5px;border:none;
+  font-family:'Syne',sans-serif;font-size:.7rem;font-weight:700;letter-spacing:.05em;
+  cursor:pointer;transition:all .2s;background:none;color:var(--cream3);
+}
+.tab.as{background:var(--gold);color:#000}
+.tab.av{background:var(--blue);color:#fff}
+.tab:not(.as):not(.av):hover{color:var(--cream2)}
+
+.search-wrap{flex:1;min-width:0;position:relative}
+.search-wrap svg{position:absolute;left:9px;top:50%;transform:translateY(-50%);color:var(--cream3);pointer-events:none;flex-shrink:0}
+#si{
+  width:100%;background:var(--ink3);border:1px solid var(--line);border-radius:7px;
+  color:var(--cream);padding:7px 10px 7px 28px;
+  font-family:'Syne',sans-serif;font-size:.78rem;outline:none;transition:border .2s;
+}
+#si:focus{border-color:var(--gold)}
+#si::placeholder{color:var(--cream3)}
+
+.hgap{flex:1;min-width:0}
+
+/* filter toggle (mobile) */
+.filter-toggle{
+  display:none;
+  background:var(--ink3);border:1px solid var(--line);border-radius:7px;
+  width:36px;height:36px;color:var(--cream2);
+  align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;
+  font-size:1rem;
+}
+.cart-btn{
+  background:var(--gold);border:none;border-radius:7px;color:#000;
+  padding:7px 12px 7px 10px;font-family:'Syne',sans-serif;font-size:.75rem;font-weight:700;
+  cursor:pointer;display:flex;align-items:center;gap:5px;
+  transition:background .15s;white-space:nowrap;flex-shrink:0;
+}
+.cart-btn:hover{background:var(--gold2)}
+.cn{background:#000;color:var(--gold);border-radius:20px;padding:1px 6px;font-size:.65rem;font-weight:700;min-width:18px;text-align:center}
+.cn.hide{display:none}
+
+/* ══════════════════════════════════════
+   BODY LAYOUT
+══════════════════════════════════════ */
+.page{padding-top:calc(var(--timer-h) + var(--hdr));display:flex;min-height:100vh}
+
+/* ══════════════════════════════════════
+   SIDEBAR
+══════════════════════════════════════ */
+aside{
+  width:var(--sidebar);min-width:var(--sidebar);
+  background:var(--ink2);border-right:1px solid var(--line);
+  position:sticky;top:calc(var(--timer-h)+var(--hdr));
+  height:calc(100vh - var(--timer-h) - var(--hdr));
+  overflow-y:auto;padding:15px 11px 40px;flex-shrink:0;
+}
+.fg{margin-bottom:20px}
+.fgt{
+  font-size:.58rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--gold);margin-bottom:8px;padding:0 5px;
+  display:flex;align-items:center;gap:6px;
+}
+.fgt::after{content:'';flex:1;height:1px;background:var(--line)}
+.fb{
+  display:flex;align-items:center;gap:6px;width:100%;background:none;
+  border:1px solid transparent;border-radius:6px;color:var(--cream3);
+  text-align:left;padding:7px 9px;font-family:'Syne',sans-serif;font-size:.78rem;
+  cursor:pointer;transition:all .15s;margin-bottom:1px;
+}
+.fb:hover{color:var(--cream2);background:var(--ink3)}
+.fb.on{color:var(--gold2);background:var(--gold3);border-color:var(--gold4)}
+.fb.onv{color:#7ab0e8;background:var(--blue2);border-color:var(--blue3)}
+.fdot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.d1{background:#5ecf94}.d2{background:#5ab5e8}.d3{background:#e8c43a}.d4{background:#e8853a}.d5{background:#de4040}
+.rst{
+  display:flex;align-items:center;justify-content:center;gap:5px;
+  width:100%;background:none;border:1px solid var(--line);border-radius:6px;
+  color:var(--cream3);padding:6px;font-family:'Syne',sans-serif;font-size:.7rem;
+  cursor:pointer;transition:all .15s;margin-top:7px;
+}
+.rst:hover{border-color:var(--gold);color:var(--gold)}
+
+/* MOBILE FILTER OVERLAY */
+.filter-overlay{
+  display:none;position:fixed;inset:0;z-index:700;
+  background:rgba(0,0,0,.6);backdrop-filter:blur(4px);
+}
+.filter-overlay.open{display:flex;align-items:flex-end}
+.filter-sheet{
+  width:100%;max-height:80vh;background:var(--ink2);
+  border-radius:16px 16px 0 0;border-top:1px solid var(--line);
+  overflow-y:auto;padding:16px 14px 32px;
+}
+.sheet-handle{
+  width:40px;height:4px;border-radius:4px;background:var(--line2);
+  margin:0 auto 16px;
+}
+.sheet-head{
+  display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;
+}
+.sheet-title{font-size:1rem;font-weight:700;font-family:'Cormorant Garamond',serif}
+.sheet-close{
+  background:none;border:1px solid var(--line);border-radius:6px;
+  width:28px;height:28px;color:var(--cream3);cursor:pointer;
+  display:flex;align-items:center;justify-content:center;font-size:.85rem;
+}
+.sheet-filters{display:grid;grid-template-columns:1fr 1fr;gap:0 12px}
+.sheet-filters .fg{margin-bottom:16px}
+
+/* ══════════════════════════════════════
+   MAIN
+══════════════════════════════════════ */
+main{flex:1;min-width:0;padding:16px 16px 80px;transition:margin-right .3s}
+main.co{margin-right:var(--cart)}
+
+.topbar{
+  display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:12px;
+}
+.pgtitle{
+  font-family:'Cormorant Garamond',serif;font-size:1.35rem;font-weight:600;
+  color:var(--cream);line-height:1;
+}
+.pgsub{font-family:'Syne',sans-serif;font-size:.7rem;color:var(--cream3);margin-left:6px}
+.srow{margin-left:auto;display:flex;align-items:center;gap:5px;flex-wrap:wrap}
+.slbl{font-size:.65rem;color:var(--cream3)}
+.sbtn{
+  background:var(--ink3);border:1px solid var(--line);border-radius:5px;
+  color:var(--cream3);padding:4px 9px;font-family:'Syne',sans-serif;font-size:.68rem;
+  cursor:pointer;transition:all .15s;
+}
+.sbtn.on,.sbtn:hover{color:var(--gold2);border-color:var(--gold4);background:var(--gold3)}
+
+#chips{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px;min-height:0}
+.chip{
+  display:inline-flex;align-items:center;gap:3px;
+  background:var(--ink3);border:1px solid var(--line2);
+  border-radius:20px;padding:4px 12px;font-size:.72rem;color:var(--cream2);
+  cursor:pointer;transition:all .15s;flex-shrink:0;font-family:'Syne',sans-serif;
+}
+.chip:hover{background:var(--gold3);color:var(--gold2);border-color:var(--gold4)}
+.cx{background:none;border:none;cursor:pointer;color:var(--gold2);font-size:.75rem;line-height:1;padding:0;opacity:.7}
+.cx:hover{opacity:1}
+
+/* ══════════════════════════════════════
+   PRODUCT GRID
+══════════════════════════════════════ */
+#vgrid, .sgrid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(175px,1fr));
+  gap:11px;
+}
+
+/* ══════════════════════════════════════
+   PRODUCT CARD
+══════════════════════════════════════ */
+.card{
+  background:var(--ink2);border:1px solid var(--line);border-radius:var(--r);
+  overflow:hidden;cursor:pointer;
+  transition:transform .2s,border-color .2s,box-shadow .2s;
+  position:relative;display:flex;flex-direction:column;
+  -webkit-tap-highlight-color:transparent;
+}
+.card:hover{transform:translateY(-2px);border-color:rgba(191,155,78,.4);box-shadow:0 8px 24px rgba(0,0,0,.5)}
+.card:active{transform:scale(.98)}
+.cimg{
+  width:100%;height:130px;background:var(--ink3);
+  display:flex;align-items:center;justify-content:center;
+  position:relative;overflow:hidden;flex-shrink:0;
+}
+.cimg img{
+  position:absolute;inset:0;width:100%;height:100%;
+  object-fit:contain;padding:7px;opacity:0;
+  transition:opacity .3s;
+}
+.cimg img.in{opacity:1}
+.ceph{font-size:2.8rem;user-select:none;transition:opacity .3s;line-height:1}
+.shim{
+  background:linear-gradient(90deg,var(--ink3) 0%,var(--ink4) 50%,var(--ink3) 100%);
+  background-size:300%;animation:sh 1.5s infinite;
+}
+@keyframes sh{0%{background-position:200%}100%{background-position:-200%}}
+.cbody{padding:9px 11px 11px;flex:1;display:flex;flex-direction:column}
+.cbrnd{font-size:.58rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);margin-bottom:2px}
+.cbrnd.vb{color:#7ab0e8}
+.cname{font-family:'Cormorant Garamond',serif;font-size:.95rem;font-weight:600;line-height:1.25;color:var(--cream);margin-bottom:6px;flex:1}
+.ctags{display:flex;flex-wrap:wrap;gap:3px;margin-bottom:7px}
+.tag{font-size:.58rem;font-weight:600;padding:2px 6px;border-radius:20px}
+.tf{background:rgba(255,255,255,.04);color:var(--cream3);border:1px solid var(--line)}
+.s1{color:#5ecf94;border:1px solid #5ecf94}.s2{color:#5ab5e8;border:1px solid #5ab5e8}
+.s3{color:#e8c43a;border:1px solid #e8c43a}.s4{color:#e8853a;border:1px solid #e8853a}
+.s5{color:#de4040;border:1px solid #de4040}
+.cbot{display:flex;align-items:center;justify-content:space-between;gap:6px}
+.cpr{font-family:'Cormorant Garamond',serif;font-size:1.05rem;font-weight:700;color:var(--gold2)}
+.cpr.vp{color:#7ab0e8}
+.cnic{font-size:.6rem;color:var(--cream3);margin-top:2px}
+.addbtn{
+  background:var(--gold3);border:1px solid var(--gold4);border-radius:6px;
+  color:var(--gold2);width:30px;height:30px;font-size:1.1rem;
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;transition:all .15s;flex-shrink:0;
+  -webkit-tap-highlight-color:transparent;
+}
+.addbtn:hover,.addbtn:active{background:var(--gold);color:#000;border-color:var(--gold)}
+.addbtn.vp{background:var(--blue2);border-color:var(--blue3);color:#7ab0e8}
+.addbtn.vp:hover,.addbtn.vp:active{background:var(--blue);color:#fff;border-color:var(--blue)}
+
+/* Badges */
+.bdg{position:absolute;font-size:.56rem;font-weight:800;letter-spacing:.06em;padding:2px 6px;border-radius:4px;line-height:1.2}
+.bdg-s{top:7px;right:7px;background:var(--red);color:#fff}
+.bdg-n{top:7px;left:7px;background:#3d9e6a;color:#fff}
+.bdg-h{top:7px;left:7px;background:#7a3de0;color:#fff} /* hot/new vape */
+
+/* Vape card header */
+.vcard-top{
+  width:100%;padding:14px 10px 8px;
+  display:flex;flex-direction:column;align-items:center;
+  background:linear-gradient(135deg,#0a1520,#0d1f30);
+}
+.vcard-emo{font-size:2.4rem;line-height:1;margin-bottom:6px}
+.vcard-model{font-size:.56rem;font-weight:700;color:#7ab0e8;letter-spacing:.1em;text-transform:uppercase}
+.vcard-puffs{font-size:.5rem;color:#4a7fc9;margin-top:1px}
+/* puff value bar */
+.puff-bar{
+  width:100%;height:3px;border-radius:3px;margin-top:6px;
+  background:rgba(255,255,255,.08);overflow:hidden;
+}
+.puff-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,#4a7fc9,#7ab0e8)}
+
+.nores{grid-column:1/-1;padding:60px 20px;text-align:center;color:var(--cream3)}
+.nores .ni{font-size:2.2rem;display:block;margin-bottom:10px}
+
+/* ══════════════════════════════════════
+   VAPE INFO BOX
+══════════════════════════════════════ */
+.vinfo{
+  background:rgba(74,127,201,.06);border:1px solid rgba(74,127,201,.2);
+  border-radius:9px;padding:11px 14px;margin-bottom:14px;
+  font-size:.74rem;color:var(--cream2);line-height:1.6;
+}
+.vinfo strong{color:#7ab0e8}
+.vinfo a{color:#7ab0e8}
+
+/* Vape comparison table */
+.vtable{
+  width:100%;border-collapse:collapse;margin-bottom:14px;
+  font-size:.72rem;
+}
+.vtable th{
+  background:rgba(74,127,201,.12);color:#7ab0e8;
+  padding:6px 8px;text-align:left;font-weight:700;font-size:.6rem;letter-spacing:.08em;
+  border-bottom:1px solid rgba(74,127,201,.2);
+}
+.vtable td{padding:5px 8px;border-bottom:1px solid var(--line);color:var(--cream2)}
+.vtable tr:last-child td{border:none}
+.vtable tr:hover td{background:var(--ink3)}
+.vt-price{color:var(--gold2);font-weight:700;font-family:'Cormorant Garamond',serif;font-size:.9rem}
+.vt-sell{color:#7ab0e8;font-weight:700;font-family:'Cormorant Garamond',serif;font-size:.9rem}
+.vt-profit{color:var(--green);font-size:.65rem}
+
+/* ══════════════════════════════════════
+   MODAL
+══════════════════════════════════════ */
+.ovl{
+  display:none;position:fixed;inset:0;
+  background:rgba(0,0,0,.82);backdrop-filter:blur(8px);
+  z-index:700;align-items:center;justify-content:center;padding:16px;
+}
+.ovl.open{display:flex}
+.modal{
+  background:var(--ink2);border:1px solid var(--line);border-radius:13px;
+  width:500px;max-width:100%;max-height:92vh;overflow-y:auto;
+  animation:rise .2s ease;position:relative;
+}
+@keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.mimg{
+  width:100%;height:190px;background:var(--ink3);
+  border-radius:13px 13px 0 0;overflow:hidden;
+  display:flex;align-items:center;justify-content:center;
+  position:relative;flex-shrink:0;
+}
+.mimg img{max-width:100%;max-height:100%;object-fit:contain;padding:14px;position:absolute;opacity:0;transition:opacity .3s}
+.mimg img.in{opacity:1}
+.meph{font-size:4.5rem;line-height:1}
+.mcls{
+  position:absolute;top:10px;right:10px;z-index:10;
+  background:var(--ink3);border:1px solid var(--line);border-radius:6px;
+  width:28px;height:28px;color:var(--cream3);cursor:pointer;font-size:.9rem;
+  display:flex;align-items:center;justify-content:center;
+}
+.mbody{padding:18px 20px 22px}
+.mbrnd{font-size:.6rem;font-weight:700;letter-spacing:.13em;text-transform:uppercase;color:var(--gold);margin-bottom:3px}
+.mbrnd.vb{color:#7ab0e8}
+.mname{font-family:'Cormorant Garamond',serif;font-size:1.55rem;font-weight:600;line-height:1.2;margin-bottom:12px}
+.mtags{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:13px}
+.mspec{background:var(--ink3);border-radius:8px;overflow:hidden;margin-bottom:15px}
+.sr{display:flex;justify-content:space-between;padding:8px 12px;border-bottom:1px solid var(--line);font-size:.78rem}
+.sr:last-child{border:none}
+.sl2{color:var(--cream3)}.sv{font-weight:600}
+.mftr{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.mpr{font-family:'Cormorant Garamond',serif;font-size:1.8rem;font-weight:700;color:var(--gold2)}
+.mpr.vp{color:#7ab0e8}
+.mcost{font-size:.7rem;color:var(--cream3)}
+.madd{
+  margin-left:auto;background:var(--gold);border:none;border-radius:8px;
+  color:#000;padding:10px 18px;font-family:'Syne',sans-serif;font-size:.78rem;font-weight:700;
+  cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:6px;
+  -webkit-tap-highlight-color:transparent;
+}
+.madd:hover{background:var(--gold2)}
+.madd.vp{background:var(--blue);color:#fff}
+.madd.vp:hover{background:#5a8fd9}
+
+/* ══════════════════════════════════════
+   CART DRAWER
+══════════════════════════════════════ */
+.cdrw{
+  position:fixed;top:calc(var(--timer-h)+var(--hdr));right:0;
+  width:var(--cart);height:calc(100vh - var(--timer-h) - var(--hdr));
+  background:var(--ink2);border-left:1px solid var(--line);
+  z-index:800;display:flex;flex-direction:column;
+  transform:translateX(100%);transition:transform .3s cubic-bezier(.4,0,.2,1);
+}
+.cdrw.open{transform:none}
+.chdr{
+  padding:13px 14px 10px;border-bottom:1px solid var(--line);
+  display:flex;align-items:center;gap:8px;flex-shrink:0;
+}
+.cttl{font-family:'Cormorant Garamond',serif;font-size:1.1rem;font-weight:700;flex:1}
+.ccls{
+  background:none;border:1px solid var(--line);border-radius:6px;
+  color:var(--cream3);width:26px;height:26px;
+  display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:.82rem;
+}
+.ccls:hover{color:var(--cream)}
+.citems{flex:1;overflow-y:auto;padding:8px 12px}
+.cempty{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  height:100%;color:var(--cream3);text-align:center;gap:7px;
+}
+.cempty big{font-size:2.2rem}
+.cempty p{font-size:.75rem}
+
+/* numbered cart row */
+.ci{display:flex;align-items:center;gap:7px;padding:7px 0;border-bottom:1px solid var(--line)}
+.ci:last-child{border:none}
+.ci-n{
+  width:20px;height:20px;border-radius:50%;flex-shrink:0;
+  background:var(--ink3);border:1px solid var(--line2);
+  display:flex;align-items:center;justify-content:center;
+  font-size:.58rem;font-weight:700;color:var(--cream3);
+}
+.cithumb{
+  width:40px;height:40px;border-radius:6px;background:var(--ink3);
+  flex-shrink:0;display:flex;align-items:center;justify-content:center;
+  overflow:hidden;font-size:1.2rem;
+}
+.cithumb img{width:100%;height:100%;object-fit:contain;padding:2px}
+.ciinfo{flex:1;min-width:0}
+.cibrnd{font-size:.55rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--gold)}
+.cibrnd.vb{color:#7ab0e8}
+.ciname{font-size:.72rem;font-weight:600;color:var(--cream);line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ciprice{font-size:.68rem;color:var(--gold2);font-weight:700;margin-top:1px}
+.ciprice.vp{color:#7ab0e8}
+.ciqty{display:flex;align-items:center;gap:3px;flex-shrink:0}
+.qb{
+  background:var(--ink3);border:1px solid var(--line);border-radius:4px;
+  width:22px;height:22px;color:var(--cream3);
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;font-size:.8rem;font-weight:700;transition:all .15s;
+  -webkit-tap-highlight-color:transparent;
+}
+.qb:hover,.qb:active{background:var(--ink4);color:var(--cream)}
+.qn{font-size:.72rem;font-weight:700;color:var(--cream);min-width:14px;text-align:center}
+.cirm{background:none;border:none;color:var(--cream3);cursor:pointer;font-size:.76rem;padding:2px;transition:color .15s;flex-shrink:0}
+.cirm:hover,.cirm:active{color:var(--red)}
+
+.cftr{padding:10px 12px;border-top:1px solid var(--line);flex-shrink:0}
+.ctrow{display:flex;justify-content:space-between;align-items:center;margin-bottom:9px}
+.ctlbl{font-size:.74rem;color:var(--cream3)}
+.ctamt{font-family:'Cormorant Garamond',serif;font-size:1.4rem;font-weight:700;color:var(--gold2)}
+.cform{margin-bottom:8px}
+.crow{display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-bottom:5px}
+.crow.full{grid-template-columns:1fr}
+.cform input,.cform textarea{
+  width:100%;background:var(--ink3);border:1px solid var(--line);border-radius:6px;
+  color:var(--cream);padding:6px 8px;font-family:'Syne',sans-serif;font-size:.7rem;outline:none;
+}
+.cform input:focus,.cform textarea:focus{border-color:var(--gold)}
+.cform input::placeholder,.cform textarea::placeholder{color:var(--cream3)}
+.cform textarea{resize:none;height:44px}
+.flbl{font-size:.56rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--cream3);margin-bottom:4px;display:block}
+.cacts{display:flex;flex-direction:column;gap:5px}
+
+/* BIG COPY BUTTON */
+.cpybig{
+  background:var(--gold);border:none;border-radius:8px;color:#000;
+  padding:12px;width:100%;
+  font-family:'Syne',sans-serif;font-size:.82rem;font-weight:700;
+  cursor:pointer;transition:all .15s;
+  display:flex;align-items:center;justify-content:center;gap:7px;
+  position:relative;overflow:hidden;
+  -webkit-tap-highlight-color:transparent;
+}
+.cpybig:hover{background:var(--gold2)}
+.cpybig .cflash{
+  position:absolute;inset:0;border-radius:8px;
+  background:var(--green);color:#fff;
+  display:flex;align-items:center;justify-content:center;
+  gap:6px;font-size:.82rem;font-weight:700;
+  opacity:0;transition:opacity .2s;pointer-events:none;
+}
+.cpybig.ok .cflash{opacity:1}
+.expbtn{
+  background:var(--ink3);border:1px solid var(--line);border-radius:7px;
+  color:var(--cream3);padding:8px;width:100%;
+  font-family:'Syne',sans-serif;font-size:.7rem;font-weight:600;
+  cursor:pointer;transition:all .15s;
+  display:flex;align-items:center;justify-content:center;gap:6px;
+}
+.expbtn:hover{border-color:var(--line2);color:var(--cream)}
+.clrcrt{
+  background:none;border:none;color:var(--cream3);
+  font-family:'Syne',sans-serif;font-size:.65rem;
+  cursor:pointer;text-align:center;width:100%;padding:3px;
+}
+.clrcrt:hover{color:var(--red)}
+
+/* TOAST */
+.toast{
+  position:fixed;bottom:16px;left:50%;
+  transform:translateX(-50%) translateY(20px);
+  background:var(--ink3);border:1px solid var(--line2);
+  border-radius:8px;padding:8px 14px;font-size:.72rem;color:var(--cream);
+  z-index:900;opacity:0;transition:all .25s;pointer-events:none;
+  display:flex;align-items:center;gap:6px;white-space:nowrap;
+}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.tiok{color:var(--green)}.tiinf{color:var(--gold)}
+
+/* Section show/hide */
+.sec{display:none}.sec.act{display:block}
+
+/* ══════════════════════════════════════
+   MOBILE RESPONSIVE
+══════════════════════════════════════ */
+@media(max-width:700px){
+  :root{--timer-h:72px;--hdr:52px;--cart:100%}
+  .logo{font-size:1rem}
+  .tabs .tab{padding:5px 9px;font-size:.66rem}
+  #si{font-size:.75rem}
+  .filter-toggle{display:flex}
+  aside{display:none}
+  main{padding:12px 12px 80px}
+  main.co{margin-right:0}
+
+  /* timers more compact */
+  .tlbl{font-size:.52rem;padding:2px 5px}
+  .tn{font-size:.82rem}
+  .tmsg{display:none}
+  .tbl{min-width:32px;padding:2px 4px}
+
+  /* grid 2 cols */
+  #vgrid, .sgrid{grid-template-columns:repeat(2,1fr);gap:8px}
+  .cimg{height:110px}
+  .ceph{font-size:2.2rem}
+  .cname{font-size:.88rem}
+  .addbtn{width:28px;height:28px;font-size:1rem}
+
+  /* cart full screen */
+  .cdrw{
+    top:0;right:0;width:100%;
+    height:100vh;
+    border-left:none;border-top:1px solid var(--line);
+    border-radius:0;
+  }
+
+  /* modal full screen */
+  .ovl{padding:0;align-items:flex-end}
+  .modal{border-radius:16px 16px 0 0;max-height:94vh;width:100%}
+  .mimg{height:160px}
+
+  /* topbar stack */
+  .topbar{flex-wrap:wrap}
+  .srow{margin-left:0;width:100%}
+
+  /* bottom action bar */
+  .page::after{
+    content:'';display:block;height:60px;
+  }
+}
+
+@media(max-width:400px){
+  header{gap:6px;padding:0 10px}
+  .logo{font-size:.9rem}
+  .tabs .tab{padding:4px 7px;font-size:.62rem}
+  .cart-btn span:not(.cn){display:none}
+  .cart-btn{padding:7px 10px}
+  .hgap{display:none}
+  #vgrid, .sgrid{grid-template-columns:repeat(auto-fill, minmax(140px,1fr));gap:6px}
+}
+</style>
+</head>
+<body>
+
+<!-- ══ TIMERS ══ -->
+<div id="timers">
+  <div class="tbrow ts">
+    <span class="tlbl sg">🌿 Snus</span>
+    <div class="tblks">
+      <div class="tbl"><div class="tn sg" id="sD">--</div><div class="ttl">D</div></div>
+      <span class="tsep sg">:</span>
+      <div class="tbl"><div class="tn sg" id="sH">--</div><div class="ttl">H</div></div>
+      <span class="tsep sg">:</span>
+      <div class="tbl"><div class="tn sg" id="sM">--</div><div class="ttl">M</div></div>
+      <span class="tsep sg">:</span>
+      <div class="tbl"><div class="tn sg" id="sS">--</div><div class="ttl">S</div></div>
+    </div>
+    <span class="tmsg" id="smsg"></span>
+  </div>
+  <div class="tbrow tv">
+    <span class="tlbl vp">💨 Vapes</span>
+    <div class="tblks">
+      <div class="tbl"><div class="tn vp" id="vD">--</div><div class="ttl">D</div></div>
+      <span class="tsep vp">:</span>
+      <div class="tbl"><div class="tn vp" id="vH">--</div><div class="ttl">H</div></div>
+      <span class="tsep vp">:</span>
+      <div class="tbl"><div class="tn vp" id="vM">--</div><div class="ttl">M</div></div>
+      <span class="tsep vp">:</span>
+      <div class="tbl"><div class="tn vp" id="vS">--</div><div class="ttl">S</div></div>
+    </div>
+    <span class="tmsg" id="vmsg"></span>
+  </div>
+</div>
+
+<!-- ══ HEADER ══ -->
+<header>
+  <div class="logo">Mein <span>Shop</span></div>
+  <div class="tabs">
+    <button class="tab as" id="tabS" onclick="switchTab('snus')">🌿 Snus</button>
+    <button class="tab" id="tabV" onclick="switchTab('vape')">💨 Vapes</button>
+    <button class="tab" id="tabB" onclick="switchTab('bulk')">📦 Großhandel</button>
+  </div>
+  <div class="search-wrap">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+    <input id="si" type="text" placeholder="Suchen…" oninput="rf()" autocomplete="off">
+  </div>
+  <div class="hgap"></div>
+  <button class="filter-toggle" onclick="openFilters()" aria-label="Filter">⊞</button>
+  <button class="cart-btn" onclick="toggleCart(event)" type="button">🛒 <span>Warenkorb</span> <span class="cn hide" id="cartN">0</span></button>
+</header>
+
+<!-- ══ MOBILE FILTER OVERLAY ══ -->
+<div class="filter-overlay" id="filterOverlay" onclick="overlayFilterClick(event)">
+  <div class="filter-sheet" id="filterSheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-head">
+      <div class="sheet-title">Filter</div>
+      <button class="sheet-close" onclick="closeFilters()">✕</button>
+    </div>
+    <div class="sheet-filters" id="mobileFilters"></div>
+    <button class="rst" onclick="clearAll();closeFilters()">↺ Alles zurücksetzen</button>
+  </div>
+</div>
+
+<!-- ══ PAGE ══ -->
+<div class="page">
+
+  <!-- SIDEBAR -->
+  <aside id="sidebar">
+    <div id="snusF">
+      <div class="fg">
+        <div class="fgt">Durchsuchen</div>
+        <button class="fb on" data-k="cat" data-v="all" onclick="setF('cat','all',this)">Alle Produkte</button>
+        <button class="fb" data-k="cat" data-v="sale" onclick="setF('cat','sale',this)">🔥 Bester Preis</button>
+      </div>
+      <div class="fg">
+        <div class="fgt">Stärke</div>
+        <button class="fb on" data-k="str" data-v="all" onclick="setF('str','all',this)">Alle</button>
+        <button class="fb" data-k="str" data-v="Leicht" onclick="setF('str','Leicht',this)"><span class="fdot d1"></span>Leicht 1–5mg</button>
+        <button class="fb" data-k="str" data-v="Mittelstark" onclick="setF('str','Mittelstark',this)"><span class="fdot d2"></span>Mittel 6–9mg</button>
+        <button class="fb" data-k="str" data-v="Stärker" onclick="setF('str','Stärker',this)"><span class="fdot d3"></span>Stark 10–14mg</button>
+        <button class="fb" data-k="str" data-v="Extra Stark" onclick="setF('str','Extra Stark',this)"><span class="fdot d4"></span>Extra 15–20mg</button>
+        <button class="fb" data-k="str" data-v="Ultra Stark" onclick="setF('str','Ultra Stark',this)"><span class="fdot d5"></span>Ultra 21–65mg</button>
+      </div>
+      <div class="fg">
+        <div class="fgt">Geschmack</div>
+        <button class="fb on" data-k="flv" data-v="all" onclick="setF('flv','all',this)">Alle</button>
+        <button class="fb" data-k="flv" data-v="mint" onclick="setF('flv','mint',this)">🌿 Minze</button>
+        <button class="fb" data-k="flv" data-v="berry" onclick="setF('flv','berry',this)">🫐 Beere</button>
+        <button class="fb" data-k="flv" data-v="fruit" onclick="setF('flv','fruit',this)">🍑 Frucht</button>
+        <button class="fb" data-k="flv" data-v="other" onclick="setF('flv','other',this)">🌶️ Andere</button>
+      </div>
+      <div class="fg">
+        <div class="fgt">Marke</div>
+        <button class="fb on" data-k="brd" data-v="all" onclick="setF('brd','all',this)">Alle</button>
+        <button class="fb" data-k="brd" data-v="Pablo" onclick="setF('brd','Pablo',this)">Pablo</button>
+        <button class="fb" data-k="brd" data-v="Klint" onclick="setF('brd','Klint',this)">Klint</button>
+        <button class="fb" data-k="brd" data-v="Cuba" onclick="setF('brd','Cuba',this)">Cuba</button>
+        <button class="fb" data-k="brd" data-v="Grant" onclick="setF('brd','Grant',this)">Grant</button>
+        <button class="fb" data-k="brd" data-v="Garant" onclick="setF('brd','Garant',this)">Garant</button>
+        <button class="fb" data-k="brd" data-v="Nois" onclick="setF('brd','Nois',this)">Nois</button>
+        <button class="fb" data-k="brd" data-v="Killa" onclick="setF('brd','Killa',this)">Killa</button>
+        <button class="fb" data-k="brd" data-v="Velo" onclick="setF('brd','Velo',this)">Velo</button>
+        <button class="fb" data-k="brd" data-v="White Fox" onclick="setF('brd','White Fox',this)">White Fox</button>
+        <button class="fb" data-k="brd" data-v="Nor" onclick="setF('brd','Nor',this)">Nor</button>
+        <button class="fb" data-k="brd" data-v="Kuma" onclick="setF('brd','Kuma',this)">Kuma</button>
+        <button class="fb" data-k="brd" data-v="Fix" onclick="setF('brd','Fix',this)">Fix</button>
+        <button class="fb" data-k="brd" data-v="Nued" onclick="setF('brd','Nued',this)">Nued</button>
+        <button class="fb" data-k="brd" data-v="Apres" onclick="setF('brd','Apres',this)">Apres</button>
+        <button class="fb" data-k="brd" data-v="SYX" onclick="setF('brd','SYX',this)">SYX</button>
+        <button class="fb" data-k="brd" data-v="Zeus" onclick="setF('brd','Zeus',this)">Zeus</button>
+        <button class="fb" data-k="brd" data-v="Glitch" onclick="setF('brd','Glitch',this)">Glitch</button>
+        <button class="fb" data-k="brd" data-v="Iceberg" onclick="setF('brd','Iceberg',this)">Iceberg</button>
+        <button class="fb" data-k="brd" data-v="Camo" onclick="setF('brd','Camo',this)">Camo</button>
+        <button class="fb" data-k="brd" data-v="Loop" onclick="setF('brd','Loop',this)">Loop</button>
+        <button class="fb" data-k="brd" data-v="NOAT" onclick="setF('brd','NOAT',this)">NOAT</button>
+        <button class="fb" data-k="brd" data-v="V&YOU" onclick="setF('brd','V&YOU',this)">V&amp;YOU</button>
+        <button class="fb" data-k="brd" data-v="Baron" onclick="setF('brd','Baron',this)">Baron</button>
+        <button class="fb" data-k="brd" data-v="Fedrs" onclick="setF('brd','Fedrs',this)">Fedrs</button>
+      </div>
+      <button class="rst" onclick="clearAll()">↺ Zurücksetzen</button>
+    </div>
+    <div id="vapeF" style="display:none">
+      <div class="fg">
+        <div class="fgt">Geschmack</div>
+        <button class="fb onv" data-k="vflv" data-v="all" onclick="setVF('vflv','all',this)">Alle</button>
+        <button class="fb" data-k="vflv" data-v="fruit" onclick="setVF('vflv','fruit',this)">🍑 Frucht</button>
+        <button class="fb" data-k="vflv" data-v="berry" onclick="setVF('vflv','berry',this)">🫐 Beere</button>
+        <button class="fb" data-k="vflv" data-v="mint" onclick="setVF('vflv','mint',this)">🌿 Minze/Kühl</button>
+        <button class="fb" data-k="vflv" data-v="tropical" onclick="setVF('vflv','tropical',this)">🌴 Tropisch</button>
+        <button class="fb" data-k="vflv" data-v="sweet" onclick="setVF('vflv','sweet',this)">🍬 Süß</button>
+      </div>
+      <button class="rst" onclick="clearVF()">↺ Zurücksetzen</button>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main id="mainA">
+
+    <!-- HERO BANNER -->
+    <div style="background:var(--ink3); border:1px solid var(--gold4); border-radius:12px; padding:16px; margin-bottom:20px; text-align:center; box-shadow: 0 4px 12px rgba(0,0,0,0.3);">
+      <h2 style="font-family:'Cormorant Garamond',serif; color:var(--gold2); font-size:1.4rem; margin-bottom:8px; line-height: 1;">Willkommen in deinem Shop</h2>
+      <p style="color:var(--cream2); font-size:0.85rem; line-height:1.5;">
+        <strong>So bestellst du:</strong><br>
+        1. Stöbere durch 🌿 Snus oder 💨 Vapes oben.<br>
+        2. Klicke auf Produkte, um sie in den Warenkorb zu legen.<br>
+        3. Öffne deinen <strong>🛒 Warenkorb</strong>, gib deinen Snapchat-Namen ein und drücke auf Absenden!
+      </p>
+    </div>
+
+    <!-- SNUS SECTION -->
+    <div class="sec act" id="secS">
+      <div class="topbar">
+        <div class="pgtitle">Snus &amp; Nikotinbeutel <span class="pgsub">— EUR</span></div>
+        <div class="srow">
+          <span class="slbl">Sortieren:</span>
+          <button class="sbtn on" onclick="setSort('def',this)">Standard</button>
+          <button class="sbtn" onclick="setSort('asc',this)">€↑</button>
+          <button class="sbtn" onclick="setSort('desc',this)">€↓</button>
+          <button class="sbtn" onclick="setSort('az',this)">A–Z</button>
+        </div>
+      </div>
+      <div id="chips"></div>
+      <div id="grid"></div>
+    </div>
+
+    <!-- VAPE SECTION -->
+    <div class="sec" id="secV">
+      <div class="topbar">
+        <div class="pgtitle">Einweg-Vapes</div>
+        <div class="srow">
+          <button class="sbtn on" onclick="setVSort('def',this)">Standard</button>
+          <button class="sbtn" onclick="setVSort('az',this)">A–Z</button>
+        </div>
+      </div>
+
+      <!-- Comparison table -->
+      <table class="vtable">
+        <thead>
+          <tr>
+            <th>GERÄT</th>
+            <th>ZÜGE</th>
+            <th>GESCHMACK</th>
+            <th>PREIS</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>VOPK Cool Bar 20000</td>
+            <td>20.000</td>
+            <td>10 Geschmäcker</td>
+            <td class="vt-sell">€20</td>
+          </tr>
+          <tr>
+            <td>WASPE FIHP 40000 🔄</td>
+            <td>40.000</td>
+            <td>Doppelgeschmack</td>
+            <td class="vt-sell">€30</td>
+          </tr>
+          <tr>
+            <td>WASPE 4-in-1 100000 🌟</td>
+            <td>100.000</td>
+            <td>4-in-1</td>
+            <td class="vt-sell">€50</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div id="vchips" style="margin-bottom:10px"></div>
+      <div id="vgrid"></div>
+    </div>
+
+    <!-- BULK SECTION -->
+    <div class="sec" id="secB">
+      <div class="topbar">
+        <div class="pgtitle">Großbestellungen &amp; Großhandel</div>
+      </div>
+      
+      <div style="background:var(--ink3); border:1px solid var(--gold4); border-radius:12px; padding:20px; margin-bottom:20px; text-align:center; box-shadow: 0 4px 12px rgba(0,0,0,0.3);">
+        <h3 style="color:var(--gold2); font-family:'Cormorant Garamond', serif; font-size:1.6rem; margin-bottom:10px;">Größere Mengen gewünscht?</h3>
+        <p style="color:var(--cream2); font-size:0.95rem; line-height:1.6; margin-bottom:16px;">
+          Alle Snus-Marken und Einweg-Vapes aus dem Katalog sind auch zu Großhandelspreisen verfügbar.<br>
+          <span style="font-size:0.8rem; opacity:0.8;">(Mindestbestellmengen gelten für Großhandelspreise)</span>
+        </p>
+        <div style="display:inline-block; background:rgba(191,155,78,0.15); border:1px solid var(--gold); border-radius:8px; padding:14px 28px;">
+          <strong style="color:var(--gold); font-size:1.1rem;">Schreib mir auf Snapchat für Großhandelspreise!</strong><br>
+          <span style="color:var(--cream); font-size:1.3rem; font-weight:bold; letter-spacing:1px; margin-top:8px; display:inline-block;"><a href="https://snapchat.com/add/vaposbro" style="color:var(--cream); text-decoration:none;" target="_blank">@vaposbro</a></span>
+        </div>
+      </div>
+
+      <h3 style="color:var(--cream); border-bottom:1px solid var(--line); padding-bottom:8px; margin:32px 0 16px; font-family:'Cormorant Garamond', serif; font-size:1.3rem;">Was wir im Großhandel anbieten</h3>
+      
+      <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(200px, 1fr)); gap:12px;">
+         <div class="card" style="padding:20px; text-align:center; pointer-events:none;">
+           <div style="font-size:2.5rem; margin-bottom:10px;">🌿</div>
+           <div style="font-weight:bold; color:var(--gold2); font-size:1.1rem; margin-bottom:6px;">Alle Snus-Marken</div>
+           <div style="font-size:0.8rem; color:var(--cream3);">Pablo, Killa, Velo, Cuba, Iceberg, Baron &amp; mehr.</div>
+         </div>
+         <div class="card" style="padding:20px; text-align:center; pointer-events:none;">
+           <div style="font-size:2.5rem; margin-bottom:10px;">🧊</div>
+           <div style="font-weight:bold; color:#4a7fc9; font-size:1.1rem; margin-bottom:6px;">VOPK 20000 Züge</div>
+           <div style="font-size:0.8rem; color:var(--cream3);">10+ Geschmäcker<br>Digitales Display</div>
+         </div>
+         <div class="card" style="padding:20px; text-align:center; pointer-events:none;">
+           <div style="font-size:2.5rem; margin-bottom:10px;">🔄</div>
+           <div style="font-weight:bold; color:#9b4ec9; font-size:1.1rem; margin-bottom:6px;">WASPE 40000 Züge</div>
+           <div style="font-size:0.8rem; color:var(--cream3);">Doppelgeschmack-System<br>Wechselbare Geschmäcker</div>
+         </div>
+         <div class="card" style="padding:20px; text-align:center; pointer-events:none;">
+           <div style="font-size:2.5rem; margin-bottom:10px;">🌟</div>
+           <div style="font-weight:bold; color:#c9a44e; font-size:1.1rem; margin-bottom:6px;">WASPE 100000 Züge</div>
+           <div style="font-size:0.8rem; color:var(--cream3);">4-in-1 Geschmäcker<br>Premium Gerät</div>
+         </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- ══ CART ══ -->
+<div class="cdrw" id="cdrw">
+  <div class="chdr">
+    <div class="cttl">🛒 Meine Bestellung</div>
+    <button class="ccls" onclick="toggleCart()">✕</button>
+  </div>
+  <div class="citems" id="citems">
+    <div class="cempty" id="cempty"><big>🛒</big><p>Leer — tippe ＋ um Produkte hinzuzufügen</p></div>
+  </div>
+  <div class="cftr" id="cftr" style="display:none">
+    <div class="ctrow">
+      <span class="ctlbl">Gesamt (<span id="ctN">0</span> Artikel)</span>
+      <span class="ctamt" id="ctot">€0</span>
+    </div>
+    <div class="cform">
+      <label class="flbl">Bestelldetails</label>
+      <div class="crow"><input id="cName" type="text" placeholder="Dein Name" required><input id="cSnap" type="text" placeholder="Snapchat Benutzername" required></div>
+      <div class="crow full"><textarea id="cNote" placeholder="Anmerkungen / Nikotinstärke für Vapes…"></textarea></div>
+    </div>
+    <div class="cacts">
+      <button class="cpybig" id="submitBtn" onclick="submitOrder()">
+        🚀 Bestellung absenden
+        <div class="cflash" id="subStatus">✓ Bestellung gesendet!</div>
+      </button>
+      <button class="expbtn" onclick="exportOrder()" style="display:none">⬇ Als .txt herunterladen</button>
+      <button class="clrcrt" onclick="clearCart()">Bestellung leeren</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL -->
+<div class="ovl" id="ovl" onclick="ovlClick(event)">
+  <div class="modal" id="modal" style="max-width:700px; width:94%; border-radius:16px; overflow:hidden; background:var(--ink2);">
+    <div style="display:flex; flex-wrap:wrap;">
+      <button class="mcls" onclick="closeMod()" style="z-index:20; background:rgba(0,0,0,0.4); border-radius:50%; margin:8px; width:36px; height:36px; border:1px solid rgba(255,255,255,0.1); color:white; font-size:1.2rem; display:flex; align-items:center; justify-content:center;">✕</button>
+      
+      <!-- IMAGE HALF -->
+      <div class="mimg" id="mImg" style="flex:1; min-width:300px; background:linear-gradient(135deg,#0a1520,#0d1f30); display:flex; align-items:center; justify-content:center; position:relative; min-height:300px;"></div>
+      
+      <!-- DETAILS HALF -->
+      <div class="mbody" style="flex:1; min-width:300px; display:flex; flex-direction:column; padding:30px 24px;">
+        <div class="mbrnd" id="mBrnd" style="font-size:0.85rem; letter-spacing:0.1em; color:var(--cream2); text-transform:uppercase; margin-bottom:4px;"></div>
+        <div class="mname" id="mName" style="font-size:1.8rem; font-family:'Cormorant Garamond',serif; color:var(--gold2); line-height:1.1; margin-bottom:12px;"></div>
+        <div class="mtags" id="mTags" style="margin-bottom:16px;"></div>
+
+        <div id="mSelectWrap" style="margin-bottom:20px; display:none;">
+          <label style="font-size:0.8rem; color:var(--cream2); margin-bottom:8px; display:block;">Geschmack / Variante wählen:</label>
+          <select id="mSelect" style="width:100%; padding:12px 14px; background:var(--ink3); border:1px solid var(--line2); color:white; border-radius:8px; font-family:'Syne',sans-serif; font-size:0.95rem; outline:none; appearance:auto;"></select>
+        </div>
+
+        <div class="mspec" id="mSpec" style="border-top:1px solid var(--line); border-bottom:1px solid var(--line); padding:16px 0; font-size:0.85rem; color:var(--cream3); line-height:1.6; margin-bottom:auto;"></div>
+        
+        <div class="mftr" style="margin-top:24px; padding:0; border:none; display:flex; align-items:center; justify-content:space-between; gap:10px;">
+          <div class="mpr" id="mPr" style="font-size:1.8rem; font-weight:700; color:var(--gold); line-height:1;"></div>
+          <button class="madd" id="mAdd" style="flex:1; max-width:200px; padding:12px; font-size:0.9rem; border-radius:8px;">＋ In den Warenkorb</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"><span id="ti"></span><span id="tm"></span></div>
+
+<script>
+// ═══════════════════ SNUS DATA ═══════════════════
+const PS=[
+  {id:1,b:"Pablo",n:"Pablo Ice Cold",h:"pablo-ice-cold",str:"Ultra Stark",sl:5,flv:"mint",cost:3.99,sell:5},
+  {id:2,b:"Grant",n:"Grant Extreme Edition",h:"grant-extreme-edition",str:"Ultra Stark",sl:5,flv:"mint",cost:4.55,sell:6},
+  {id:3,b:"Cuba",n:"Cuba Black Cherry",h:"cuba-black-line-cherry",str:"Ultra Stark",sl:5,flv:"fruit",cost:4.5,sell:6},
+  {id:4,b:"Pablo",n:"Pablo Exclusive Kiwi",h:"pablo-exclusive-kiwi",str:"Ultra Stark",sl:5,flv:"fruit",cost:3.99,sell:5},
+  {id:5,b:"Pablo",n:"Pablo Exclusive Grape Ice",h:"pablo-exklusive-grape-ice",str:"Ultra Stark",sl:5,flv:"fruit",cost:3.99,sell:5},
+  {id:6,b:"Nois",n:"Nois Extreme Blueberry",h:"nois-extreme-blueberry",str:"Ultra Stark",sl:5,flv:"berry",cost:3.99,sell:5},
+  {id:7,b:"Garant",n:"Garant Ice Cool",h:"garant-ice-cool",str:"Ultra Stark",sl:5,flv:"mint",cost:4.55,sell:6},
+  {id:8,b:"Pablo",n:"Pablo Exclusive Mango Ice",h:"pablo-exclusive-mango-ice",str:"Ultra Stark",sl:5,flv:"fruit",cost:3.99,sell:5},
+  {id:9,b:"Cuba",n:"Cuba Black Blueberry",h:"cuba-black-blueberry",str:"Ultra Stark",sl:5,flv:"berry",cost:4.5,sell:6},
+  {id:10,b:"Klint",n:"Klint Avalanche Mint",h:"klint-avalanche-mint",str:"Ultra Stark",sl:5,flv:"mint",cost:2.59,sell:4},
+  {id:11,b:"Velo",n:"Velo Freezing Peppermint Max",h:"velo-sweden-x-freeze-max",str:"Ultra Stark",sl:5,flv:"mint",cost:5.45,sell:7},
+  {id:12,b:"Klint",n:"Klint Arctic Mint X-Strong",h:"klint-arctic-mint-x-strong",str:"Extra Stark",sl:4,flv:"mint",cost:2.59,sell:4},
+  {id:13,b:"Pablo",n:"Pablo Exclusive Passion Fruit",h:"pablo-exclusive-passion-fruit",str:"Ultra Stark",sl:5,flv:"fruit",cost:3.99,sell:5},
+  {id:14,b:"Nois",n:"Nois Extreme Cool",h:"nois-extreme-cool",str:"Ultra Stark",sl:5,flv:"mint",cost:3.99,sell:5},
+  {id:15,b:"Pablo",n:"Pablo Ice Cold Mini",h:"pablo-ice-cold-mini",str:"Ultra Stark",sl:5,flv:"mint",cost:3.99,sell:5},
+  {id:16,b:"Grant",n:"Grant Extreme Ice Peach",h:"grant-extreme-ice-peach",str:"Ultra Stark",sl:5,flv:"fruit",cost:4.55,sell:6},
+  {id:17,b:"Cuba",n:"Cuba White Cherry",h:"cuba-white-cherry",str:"Extra Stark",sl:4,flv:"fruit",cost:4.5,sell:6},
+  {id:18,b:"Pablo",n:"Pablo Exclusive Frosted Ice",h:"pablo-exklusive-frosted-ice",str:"Ultra Stark",sl:5,flv:"mint",cost:3.99,sell:5},
+  {id:19,b:"Pablo",n:"Pablo Exclusive Blue Raspberry",h:"pablo-exclusive-blue-raspberry",str:"Ultra Stark",sl:5,flv:"berry",cost:3.99,sell:5},
+  {id:20,b:"White Fox",n:"White Fox White Slim",h:"fox-white-slim",str:"Extra Stark",sl:4,flv:"mint",cost:4.69,sell:6},
+  {id:21,b:"Nois",n:"Nois Extreme Cherry",h:"nois-extreme-cherry",str:"Ultra Stark",sl:5,flv:"fruit",cost:3.99,sell:5},
+  {id:22,b:"Cuba",n:"Cuba Black Peach",h:"cuba-black-peach",str:"Ultra Stark",sl:5,flv:"fruit",cost:4.5,sell:6},
+  {id:23,b:"Cuba",n:"Cuba White Peach",h:"cuba-white-peach",str:"Extra Stark",sl:4,flv:"fruit",cost:4.5,sell:6},
+  {id:24,b:"Pablo",n:"Pablo Exclusive Tropical Punch",h:"pablo-exclusive-tropical-punch",str:"Ultra Stark",sl:5,flv:"fruit",cost:3.99,sell:5},
+  {id:25,b:"Pablo",n:"Pablo Exclusive Lemonade",h:"pablo-exclusive-lemonade",str:"Ultra Stark",sl:5,flv:"fruit",cost:3.99,sell:5},
+  {id:26,b:"Velo",n:"Velo Freezing Peppermint",h:"velo-mighty-peppermint",str:"Extra Stark",sl:4,flv:"mint",cost:5.45,sell:7},
+  {id:27,b:"Grant",n:"Grant Extreme Ice Blueberry",h:"grant-extreme-ice-blueberry",str:"Ultra Stark",sl:5,flv:"berry",cost:4.55,sell:6},
+  {id:28,b:"Pablo",n:"Pablo Exclusive Frosted Mint",h:"pablo-exklusive-frosted-mint",str:"Ultra Stark",sl:5,flv:"mint",cost:3.99,sell:5},
+  {id:29,b:"Cuba",n:"Cuba Black Forest Berries",h:"cuba-black-forest-berries",str:"Ultra Stark",sl:5,flv:"berry",cost:4.5,sell:6},
+  {id:30,b:"Killa",n:"Killa Cola Slim",h:"killa-cola-slim",str:"Extra Stark",sl:4,flv:"other",cost:3.69,sell:5},
+  {id:31,b:"Baron",n:"Baron Fruit Cocktail",h:"baron-fruit-cocktail",str:"Ultra Stark",sl:5,flv:"fruit",cost:4.5,sell:6},
+  {id:32,b:"Iceberg",n:"Iceberg Sour Berries",h:"iceberg-sour-berries",str:"Ultra Stark",sl:5,flv:"berry",cost:4.49,sell:6},
+  {id:33,b:"Nois",n:"Nois Extreme Mango",h:"nois-extreme-mango",str:"Ultra Stark",sl:5,flv:"fruit",cost:3.99,sell:5},
+  {id:34,b:"Pablo",n:"Pablo Exclusive Bubblegum",h:"pablo-exklusive-bubblegum",str:"Ultra Stark",sl:5,flv:"other",cost:3.99,sell:5},
+  {id:35,b:"Pablo",n:"Pablo Exclusive Strawberry Watermelon",h:"pablo-exclusive-strawberry-watermelon",str:"Ultra Stark",sl:5,flv:"fruit",cost:3.99,sell:5},
+  {id:36,b:"Cuba",n:"Cuba White Blueberry",h:"cuba-white-blueberry",str:"Extra Stark",sl:4,flv:"berry",cost:4.5,sell:6},
+  {id:37,b:"Fedrs",n:"Fedrs Hard Evilberry",h:"fedrs-hard-evilberry",str:"Ultra Stark",sl:5,flv:"berry",cost:5.15,sell:7},
+  {id:38,b:"Klint",n:"Klint Freeze Mint",h:"klint-freeze-mint",str:"Extra Stark",sl:4,flv:"mint",cost:2.59,sell:4},
+  {id:39,b:"Garant",n:"Garant Extreme Cherry",h:"garant-extreme-cherry",str:"Ultra Stark",sl:5,flv:"fruit",cost:4.55,sell:6},
+  {id:40,b:"Zeus",n:"Zeus Tropic Burst",h:"zeus-tropic-burst",str:"Ultra Stark",sl:5,flv:"fruit",cost:4.3,sell:6},
+  {id:41,b:"Pablo",n:"Pablo Exclusive Orange",h:"pablo-exclusive-orange",str:"Ultra Stark",sl:5,flv:"fruit",cost:3.99,sell:5},
+  {id:42,b:"Pablo",n:"Pablo Exclusive Banana Ice",h:"pablo-exclusive-banana-hit",str:"Ultra Stark",sl:5,flv:"fruit",cost:3.99,sell:5},
+  {id:43,b:"Killa",n:"Killa Apple",h:"killa-apple",str:"Extra Stark",sl:4,flv:"fruit",cost:3.69,sell:5},
+  {id:44,b:"Zeus",n:"Zeus Frozen Citrus",h:"zeus-frozen-citrus",str:"Ultra Stark",sl:5,flv:"fruit",cost:4.3,sell:6},
+  {id:45,b:"Pablo",n:"Pablo Exclusive Dark Cherry",h:"pablo-exclusive-dark-cherry",str:"Ultra Stark",sl:5,flv:"fruit",cost:3.99,sell:5},
+  {id:46,b:"Klint",n:"Klint Polar Mint",h:"klint-polar-mint",str:"Stärker",sl:3,flv:"mint",cost:2.59,sell:4},
+  {id:47,b:"Cuba",n:"Cuba Black Watermelon",h:"cuba-black-watermelon",str:"Ultra Stark",sl:5,flv:"fruit",cost:4.5,sell:6},
+  {id:48,b:"Garant",n:"Garant Extreme Raspberry",h:"garant-extreme-raspberry",str:"Ultra Stark",sl:5,flv:"fruit",cost:4.55,sell:6},
+  {id:49,b:"Killa",n:"Killa Blueberry",h:"killa-blueberry-1",str:"Extra Stark",sl:4,flv:"berry",cost:3.69,sell:5},
+  {id:50,b:"Cuba",n:"Cuba White Forest Berries",h:"cuba-white-forrest-berries",str:"Extra Stark",sl:4,flv:"berry",cost:4.5,sell:6},
+  {id:51,b:"Cuba",n:"Cuba Black Double Fresh",h:"cuba-black-line",str:"Ultra Stark",sl:5,flv:"mint",cost:4.5,sell:6},
+  {id:52,b:"Cuba",n:"Cuba Black Cola",h:"cuba-black-cola",str:"Ultra Stark",sl:5,flv:"other",cost:4.5,sell:6},
+  {id:53,b:"Nois",n:"Nois Ice Cool",h:"nois-ice-cool",str:"Ultra Stark",sl:5,flv:"mint",cost:3.99,sell:5},
+  {id:54,b:"Klint",n:"Klint Apple Mint X-Strong",h:"klint-apple-mint-x-strong",str:"Extra Stark",sl:4,flv:"fruit",cost:2.59,sell:4},
+  {id:55,b:"Glitch",n:"Glitch Frozen Cherry Cola",h:"glitch-cherry-cola",str:"Extra Stark",sl:4,flv:"other",cost:3.25,sell:5},
+  {id:56,b:"Nois",n:"Nois Extreme Grape",h:"nois-extreme-grape",str:"Ultra Stark",sl:5,flv:"berry",cost:3.99,sell:5},
+  {id:57,b:"Cuba",n:"Cuba Black Pineapple",h:"cuba-black-pineapple",str:"Ultra Stark",sl:5,flv:"fruit",cost:4.5,sell:6},
+  {id:58,b:"Apres",n:"Apres Ice Tea Peach",h:"apres-n-5-ice-tea-peach",str:"Extra Stark",sl:4,flv:"fruit",cost:3.15,sell:5},
+  {id:59,b:"Fix",n:"Fix Strawberry Kiwi",h:"fix-kiwi-strawberry",str:"Stärker",sl:3,flv:"fruit",cost:2.59,sell:4},
+  {id:60,b:"Pablo",n:"Pablo X Ice Cold",h:"pablo-x-ice-cold",str:"Ultra Stark",sl:5,flv:"mint",cost:3.99,sell:5},
+  {id:61,b:"Grant",n:"Grant Wildberry",h:"grant-wildberry",str:"Extra Stark",sl:4,flv:"berry",cost:4.45,sell:6},
+  {id:62,b:"Baron",n:"Baron Menthol",h:"baron-menthol",str:"Ultra Stark",sl:5,flv:"mint",cost:4.5,sell:6},
+  {id:63,b:"Killa",n:"Killa Watermelon",h:"killa-watermelon",str:"Extra Stark",sl:4,flv:"fruit",cost:3.69,sell:5},
+  {id:64,b:"Velo",n:"Velo Breezy Mango",h:"velo-breezy-mango",str:"Extra Stark",sl:4,flv:"fruit",cost:5.45,sell:7},
+  {id:65,b:"Nois",n:"Nois Cool Strong 50",h:"nois-cool-strong-50",str:"Ultra Stark",sl:5,flv:"mint",cost:3.99,sell:5},
+  {id:66,b:"Cuba",n:"Cuba Black Currant",h:"cuba-black-black-currant",str:"Ultra Stark",sl:5,flv:"berry",cost:4.5,sell:6},
+  {id:67,b:"Iceberg",n:"Iceberg Emerald",h:"iceberg-emerald",str:"Ultra Stark",sl:5,flv:"mint",cost:4.49,sell:6},
+  {id:68,b:"Zeus",n:"Zeus Epic Berry",h:"zeus-epic-berry",str:"Ultra Stark",sl:5,flv:"berry",cost:4.3,sell:6},
+  {id:69,b:"Zeus",n:"Zeus Arctic Freeze",h:"zeus-arctic-freeze",str:"Ultra Stark",sl:5,flv:"mint",cost:4.3,sell:6},
+  {id:70,b:"Glitch",n:"Glitch Blueberry Ice",h:"glitch-blueberry",str:"Extra Stark",sl:4,flv:"berry",cost:3.25,sell:5},
+  {id:71,b:"Nois",n:"Nois Extreme Watermelon",h:"nois-extreme-watermelon",str:"Ultra Stark",sl:5,flv:"fruit",cost:3.99,sell:5},
+  {id:72,b:"Iceberg",n:"Iceberg Kiwi Strawberry",h:"iceberg-kiwi-strawberry",str:"Ultra Stark",sl:5,flv:"fruit",cost:4.49,sell:6},
+  {id:73,b:"Killa",n:"Killa Cold Mint",h:"killa-cold-mint",str:"Extra Stark",sl:4,flv:"mint",cost:3.69,sell:5},
+  {id:74,b:"Velo",n:"Velo Icy Cherry",h:"velo-icy-cherry",str:"Stärker",sl:3,flv:"fruit",cost:5.45,sell:7},
+  {id:75,b:"Pablo",n:"Pablo X-Ice Cold Mini",h:"pablo-x-ice-cold-mini",str:"Ultra Stark",sl:5,flv:"mint",cost:3.99,sell:5},
+  {id:76,b:"Garant",n:"Garant Extreme Ice Cool",h:"garant-extreme-ice-cool",str:"Ultra Stark",sl:5,flv:"mint",cost:4.55,sell:6},
+  {id:77,b:"Grant",n:"Grant Extreme Mango Lime",h:"grant-extreme-mango-lime",str:"Ultra Stark",sl:5,flv:"fruit",cost:4.55,sell:6},
+  {id:78,b:"Killa",n:"Killa Grape Ice",h:"killa-grape-ice",str:"Extra Stark",sl:4,flv:"berry",cost:3.69,sell:5},
+  {id:79,b:"Cuba",n:"Cuba Black Apple Juice",h:"cuba-black-apple-juice",str:"Ultra Stark",sl:5,flv:"fruit",cost:4.5,sell:6},
+  {id:80,b:"V&YOU",n:"V&YOU Boost+ Cool Berry",h:"v-you-boost-berry",str:"Ultra Stark",sl:5,flv:"berry",cost:3.89,sell:5},
+  {id:81,b:"Cuba",n:"Cuba Black Grape",h:"cuba-black-grape",str:"Ultra Stark",sl:5,flv:"berry",cost:4.5,sell:6},
+  {id:82,b:"White Fox",n:"White Fox Double Mint",h:"fox-double-mint",str:"Extra Stark",sl:4,flv:"mint",cost:4.69,sell:6},
+  {id:83,b:"V&YOU",n:"V&YOU Boost+ Fresh Citrus",h:"v-you-boost-fresh-citrus",str:"Ultra Stark",sl:5,flv:"fruit",cost:3.89,sell:5},
+  {id:84,b:"Klint",n:"Klint Mint Nr. 1",h:"klint-mint-nr-1",str:"Leicht",sl:1,flv:"mint",cost:3.99,sell:5},
+  {id:85,b:"Zeus",n:"Zeus Mint Rage",h:"zeus-mint-rage",str:"Ultra Stark",sl:5,flv:"mint",cost:4.3,sell:6},
+  {id:86,b:"Velo",n:"Velo Crispy Peppermint",h:"velo-crispy-peppermint",str:"Stärker",sl:3,flv:"mint",cost:5.45,sell:7},
+  {id:87,b:"Nois",n:"Nois Cherry Ice",h:"nois-cherry-ice",str:"Ultra Stark",sl:5,flv:"fruit",cost:3.99,sell:5},
+  {id:88,b:"Fix",n:"Fix Cherry Blossom",h:"fix-cherry-blossom",str:"Extra Stark",sl:4,flv:"fruit",cost:3.85,sell:5},
+  {id:89,b:"Velo",n:"Velo Peppermint Storm",h:"velo-peppermint-storm",str:"Extra Stark",sl:4,flv:"mint",cost:5.45,sell:7},
+  {id:90,b:"Cuba",n:"Cuba White Lollipop",h:"cuba-white-lollipop",str:"Extra Stark",sl:4,flv:"other",cost:4.5,sell:6},
+  {id:91,b:"Fedrs",n:"Fedrs Hard Raspberry",h:"fedrs-hard-raspberry",str:"Ultra Stark",sl:5,flv:"berry",cost:5.15,sell:7},
+  {id:92,b:"Cuba",n:"Cuba White Double Fresh",h:"cuba-white-line",str:"Extra Stark",sl:4,flv:"mint",cost:4.5,sell:6},
+  {id:93,b:"Iceberg",n:"Iceberg Wildberries",h:"iceberg-berries",str:"Ultra Stark",sl:5,flv:"berry",cost:4.49,sell:6},
+  {id:94,b:"Zeus",n:"Zeus Bubblegum",h:"zeus-bubblegum",str:"Ultra Stark",sl:5,flv:"other",cost:4.3,sell:6},
+  {id:95,b:"Fedrs",n:"Fedrs Hard Cola Vanilla",h:"fedrs-hard-cola-vanilla",str:"Ultra Stark",sl:5,flv:"other",cost:5.15,sell:7},
+  {id:96,b:"Nois",n:"Nois Black Currant",h:"nois-black-currant",str:"Extra Stark",sl:4,flv:"berry",cost:3.99,sell:5},
+  {id:97,b:"Pablo",n:"Pablo Exclusive Pink Lemonade",h:"pablo-exclusive-pink-lemonade",str:"Ultra Stark",sl:5,flv:"fruit",cost:3.99,sell:5},
+  {id:98,b:"Edel",n:"Edel Berry Ice",h:"edel-snus-berry-ice",str:"Extra Stark",sl:4,flv:"berry",cost:3.3,sell:5},
+  {id:99,b:"Cuba",n:"Cuba Black Banana",h:"cuba-black-banana-hit",str:"Ultra Stark",sl:5,flv:"fruit",cost:4.5,sell:6},
+  {id:100,b:"Pablo",n:"Pablo Exclusive Sour Blueberries",h:"pablo-exclusive-sour-blueberries",str:"Ultra Stark",sl:5,flv:"berry",cost:3.99,sell:5},
+  {id:101,b:"Fedrs",n:"Fedrs Hard Mint",h:"fedrs-hard-mint",str:"Ultra Stark",sl:5,flv:"mint",cost:5.15,sell:7},
+  {id:102,b:"Pablo",n:"Pablo Gold Tropical Punch",h:"pablo-gold-edition-tropical-punch",str:"Ultra Stark",sl:5,flv:"fruit",cost:3.99,sell:5},
+  {id:103,b:"Fix",n:"Fix Watermelon Ice",h:"fix-watermelon-ice",str:"Extra Stark",sl:4,flv:"fruit",cost:3.85,sell:5},
+  {id:104,b:"Camo",n:"Camo Green Apple",h:"camo-green-apple",str:"Ultra Stark",sl:5,flv:"fruit",cost:3.6,sell:5},
+  {id:105,b:"Iceberg",n:"Iceberg Watermelon",h:"iceberg-watermelon",str:"Extra Stark",sl:4,flv:"fruit",cost:4.49,sell:6},
+  {id:106,b:"Garant",n:"Garant Extreme Citrus",h:"garant-extreme-citrus",str:"Ultra Stark",sl:5,flv:"fruit",cost:4.55,sell:6},
+  {id:107,b:"Camo",n:"Camo Spicy Citrus",h:"camo-spicy-citrus",str:"Ultra Stark",sl:5,flv:"other",cost:3.6,sell:5},
+  {id:108,b:"Klint",n:"Klint Breeze Mint",h:"klint-breeze-mint-mini",str:"Mittelstark",sl:2,flv:"mint",cost:3.99,sell:5},
+  {id:109,b:"Garant",n:"Garant Extreme Cola",h:"garant-extreme-cola",str:"Ultra Stark",sl:5,flv:"other",cost:4.55,sell:6},
+  {id:110,b:"Nois",n:"Nois Grape Ice",h:"nois-grape-ice",str:"Ultra Stark",sl:5,flv:"berry",cost:3.99,sell:5},
+  {id:111,b:"V&YOU",n:"V&YOU Boost Berry",h:"v-you-boost-berry-1",str:"Extra Stark",sl:4,flv:"berry",cost:3.89,sell:5},
+  {id:112,b:"NOAT",n:"NOAT Cold Mint",h:"noat-cold-mint",str:"Extra Stark",sl:4,flv:"mint",cost:5.5,sell:7},
+  {id:113,b:"NOAT",n:"NOAT Ginger Peach",h:"noat-ginger-peach",str:"Stärker",sl:3,flv:"fruit",cost:5.5,sell:7},
+  {id:114,b:"NOAT",n:"NOAT Peppermint",h:"noat-peppermint",str:"Stärker",sl:3,flv:"mint",cost:5.5,sell:7},
+  {id:115,b:"NOAT",n:"NOAT Spearmint",h:"noat-spearmint",str:"Mittelstark",sl:2,flv:"mint",cost:5.5,sell:7},
+  {id:116,b:"SYX",n:"SYX Blueberry",h:"syx-blueberry",str:"Ultra Stark",sl:5,flv:"berry",cost:2.75,sell:4},
+  {id:117,b:"Nor",n:"Nor No.1 Cool Mint",h:"nor-no-1-cool-mint",str:"Extra Stark",sl:4,flv:"mint",cost:3.45,sell:5},
+  {id:118,b:"Nor",n:"Nor No.2 Peppermint",h:"nor-no-2-peppermint",str:"Extra Stark",sl:4,flv:"mint",cost:3.45,sell:5},
+  {id:119,b:"Nor",n:"Nor No.3 Mint",h:"nor-no-3-mint",str:"Mittelstark",sl:2,flv:"mint",cost:3.45,sell:5},
+  {id:120,b:"Nor",n:"Nor No.4 Strawberry",h:"nor-no-4-strawberry",str:"Stärker",sl:3,flv:"fruit",cost:3.45,sell:5},
+  {id:121,b:"Nor",n:"Nor No.10 Peach",h:"nor-no-10-peach",str:"Mittelstark",sl:2,flv:"fruit",cost:3.45,sell:5},
+  {id:122,b:"Nor",n:"Nor No.23 Ice Mint",h:"nor-no-12-ice-mint",str:"Ultra Stark",sl:5,flv:"mint",cost:3.45,sell:5},
+  {id:123,b:"Nor",n:"Nor Black Grape",h:"nor-black-grape",str:"Extra Stark",sl:4,flv:"berry",cost:3.35,sell:5},
+  {id:124,b:"Nor",n:"Nor Watermelon",h:"nor-watermelon",str:"Extra Stark",sl:4,flv:"fruit",cost:3.35,sell:5},
+  {id:125,b:"Kuma",n:"Kuma Ice Cool",h:"kuma-ice-cool",str:"Ultra Stark",sl:5,flv:"mint",cost:3.99,sell:5},
+  {id:126,b:"Kuma",n:"Kuma Cherry",h:"kuma-cherry",str:"Ultra Stark",sl:5,flv:"fruit",cost:3.25,sell:5},
+  {id:127,b:"Kuma",n:"Kuma Wintergreen",h:"kuma-wintergreen",str:"Ultra Stark",sl:5,flv:"mint",cost:3.25,sell:5},
+  {id:128,b:"Kuma",n:"Kuma Banana Toffee",h:"kuma-banana-toffee",str:"Ultra Stark",sl:5,flv:"fruit",cost:3.25,sell:5},
+  {id:129,b:"Klint",n:"Klint Strawberry Mini",h:"klint-strawberry-mini",str:"Extra Stark",sl:4,flv:"fruit",cost:3.99,sell:5},
+  {id:130,b:"Klint",n:"Klint Blueberry Mini",h:"klint-blueberry-mini",str:"Extra Stark",sl:4,flv:"berry",cost:3.99,sell:5},
+  {id:131,b:"Klint",n:"Klint Alaskan Mint",h:"klint-alaskan-mint",str:"Ultra Stark",sl:5,flv:"mint",cost:3.99,sell:5},
+  {id:132,b:"Velo",n:"Velo Dark Blackcurrant",h:"velo-dark-blackcurrant",str:"Stärker",sl:3,flv:"berry",cost:5.45,sell:7},
+  {id:133,b:"Velo",n:"Velo Bright Peppermint",h:"velo-bright-peppermint",str:"Stärker",sl:3,flv:"mint",cost:5.45,sell:7},
+  {id:134,b:"Loop",n:"Loop Fresh Spearmint Hyper Strong",h:"loop-fresh-spearmint-hyper-strong",str:"Ultra Stark",sl:5,flv:"mint",cost:5.1,sell:7},
+  {id:135,b:"Loop",n:"Loop Red Chili Melon",h:"loop-red-chili-mini",str:"Extra Stark",sl:4,flv:"other",cost:5.1,sell:7},
+  {id:136,b:"Apres",n:"Apres Hyper Strong Menthol",h:"apres-hyper-strong-menthol",str:"Extra Stark",sl:4,flv:"mint",cost:3.39,sell:5},
+  {id:137,b:"Apres",n:"Apres Blueberry Hyper Strong",h:"apres-no-12-blueberry-hyper-strong",str:"Extra Stark",sl:4,flv:"berry",cost:3.39,sell:5},
+  {id:138,b:"Iceberg",n:"Iceberg Cherry",h:"iceberg-cherry",str:"Ultra Stark",sl:5,flv:"fruit",cost:4.49,sell:6},
+  {id:139,b:"V&YOU",n:"V&YOU Focus Berry",h:"v-you-focus-berry",str:"Mittelstark",sl:2,flv:"berry",cost:3.89,sell:5},
+  {id:140,b:"V&YOU",n:"V&YOU Focus Mint",h:"v-you-focus-mint",str:"Mittelstark",sl:2,flv:"mint",cost:3.89,sell:5},
+  {id:141,b:"Klint",n:"Klint Fresh Lime",h:"klint-fresh-lime",str:"Mittelstark",sl:2,flv:"fruit",cost:3.99,sell:5},
+  {id:142,b:"Klint",n:"Klint Arctic Mint Max",h:"klint-arctic-mint-max",str:"Extra Stark",sl:4,flv:"mint",cost:4.25,sell:6},
+  {id:143,b:"Fix",n:"Fix Blueberry Ice",h:"fix-blueberry-ice",str:"Extra Stark",sl:4,flv:"berry",cost:3.85,sell:5},
+  {id:144,b:"Glitch",n:"Glitch Cool Ice",h:"glitch-cool-ice",str:"Extra Stark",sl:4,flv:"mint",cost:3.89,sell:5},
+  {id:145,b:"Killa",n:"Killa Strawberry Lychee",h:"killa-strawberry-lychee",str:"Extra Stark",sl:4,flv:"fruit",cost:3.69,sell:5},
+  {id:146,b:"Camo",n:"Camo Orange Bubblegum",h:"camo-orange-bubblegum",str:"Ultra Stark",sl:5,flv:"other",cost:3.6,sell:5},
+  {id:147,b:"Camo",n:"Camo Wild Mint",h:"camo-grape-slim",str:"Ultra Stark",sl:5,flv:"mint",cost:3.6,sell:5},
+  {id:148,b:"Garant",n:"Garant Extreme Pineapple",h:"garant-extreme-pineapple",str:"Ultra Stark",sl:5,flv:"fruit",cost:4.55,sell:6},
+  {id:149,b:"Nued",n:"Nued Icy Mint",h:"nued-icy-mint",str:"Stärker",sl:3,flv:"mint",cost:3.99,sell:5},
+  {id:150,b:"Nued",n:"Nued Lemon Lime",h:"nued-lemon-lime",str:"Stärker",sl:3,flv:"fruit",cost:3.99,sell:5},
+  {id:151,b:"Nued",n:"Nued Strawberry",h:"nued-strawberry",str:"Stärker",sl:3,flv:"fruit",cost:3.99,sell:5},
+  {id:152,b:"Edel",n:"Edel Berry",h:"edel-snus-berry",str:"Stärker",sl:3,flv:"berry",cost:4.39,sell:6},
+  {id:153,b:"Edel",n:"Edel Onyx",h:"edel-snus-onyx",str:"Ultra Stark",sl:5,flv:"other",cost:4.39,sell:6},
+  {id:154,b:"Kurwa",n:"Kurwa Fatality Blueberry",h:"kurwa-blueberry",str:"Ultra Stark",sl:5,flv:"berry",cost:4.89,sell:6},
+  {id:155,b:"Velo",n:"Velo Orange Spark",h:"velo-orange-spark",str:"Stärker",sl:3,flv:"fruit",cost:5.45,sell:7},
+  {id:156,b:"Velo",n:"Velo Groovy Grape",h:"velo-groovy-grape",str:"Mittelstark",sl:2,flv:"berry",cost:5.45,sell:7},
+  {id:157,b:"Cuba",n:"Cuba White Mint",h:"cuba-white-mint",str:"Extra Stark",sl:4,flv:"mint",cost:4.5,sell:6},
+  {id:158,b:"Pablo",n:"Pablo Red",h:"pablo-red",str:"Ultra Stark",sl:5,flv:"other",cost:3.99,sell:5},
+  {id:159,b:"Pablo",n:"Pablo Exclusive Strawberry Kiwi",h:"pablo-exclusive-strawberry-kiwi",str:"Ultra Stark",sl:5,flv:"fruit",cost:3.99,sell:5},
+  {id:160,b:"Killa",n:"Killa Blue Raspberry",h:"killa-blue-raspberry",str:"Extra Stark",sl:4,flv:"berry",cost:3.69,sell:5},
+];
+
+// Snus Pricing Rule: min €1 profit, always round up to full euro
+PS.forEach(p => {
+  p.sell = Math.ceil(p.cost + 1);
+});
+
+// ═══════════════════ VAPE DATA ═══════════════════
+const VDEVICES=[
+  {
+    id:'v1',code:'vopk20k',
+    brand:'VOPK',name:'Cool Bar 20000',
+    puffs:20000,puffMax:20000,
+    flavors:10,flavorType:'1 Geschmack pro Einheit',
+    liquid:'High-capacity',battery:'Wiederaufladbar (Type-C)',coil:'Advanced Mesh Coil',
+    nic:'5%',screen:'Smart Digital Display',
+    feature:'Type-C wiederaufladbar',
+    cost:6,sell:20,
+    url:'https://gleevape.com/product/vopk-cool-bar-20000-puffs-disposable-vapes-wholesale-20k-bulk-buy-premium-flavor-options/',
+    em:'🧊',col:'#4a7fc9', img:'https://i0.wp.com/gleevape.com/wp-content/uploads/2025/11/VOPK-COOL-BAR-20000-Puffs-Disposable-Vapes-Wholesale-20K-Bulk-Buy-Premium-Flavor-Options-8.webp?fit=2000%2C2000&ssl=1',
+    flvs:[
+      {n:'Watermelon Ice',flv:'fruit'},{n:'Strawberry Ice',flv:'fruit'},
+      {n:'Mango Ice',flv:'tropical'},{n:'Banana Ice',flv:'tropical'},
+      {n:'Cola Ice',flv:'sweet'},{n:'Berry Grape',flv:'berry'},
+      {n:'Pineapple Coconut Ice',flv:'tropical'},{n:'Passion Fruit Guava',flv:'tropical'},
+      {n:'BlackCurrant',flv:'berry'},{n:'Strawberry Watermelon',flv:'fruit'}
+    ]
+  },
+  {
+    id:'v2',code:'waspe40k',
+    brand:'WASPE',name:'FIHP AIVIOU 40000',
+    puffs:40000,puffMax:40000,
+    flavors:20,flavorType:'Doppelgeschmack (Umschaltbar)',
+    liquid:'36ml (Dual-Reservoir)',battery:'850mAh (Type-C)',coil:'Double Mesh Coil 0.9Ω',
+    nic:'0% / 2% / 5%',screen:'Smart LED Screen',
+    feature:'Doppelgeschmack Schalter',
+    cost:8,sell:30,
+    url:'https://gleevape.com/product/waspe-fihp-40000-puffs-double-flavor-led-screen-40k-0-2-5-low-nicotine-bulk-buy-wholesale-rechargeable-disposable-vapes-pen/',
+    em:'🔄',col:'#9b4ec9', img:'https://i0.wp.com/gleevape.com/wp-content/uploads/2025/02/WASPE-AIVIOU-40000-Puffs-Double-Flavor-LED-Screen-40k-0-2-5-Low-Nicotine-61.webp?fit=1500%2C1500&ssl=1',
+    flvs:[
+      {n:'Verschiedene Dual-Kombinationen',flv:'other'}
+    ]
+  },
+  {
+    id:'v3',code:'vopk60k',
+    brand:'VOPK',name:'Triple 60000',
+    puffs:60000,puffMax:60000,
+    flavors:15,flavorType:'3-in-1 Umschaltbar',
+    liquid:'45ml',battery:'900mAh (Type-C)',coil:'Triple Mesh Coil',
+    nic:'2% / 5%',screen:'LED Status Board',
+    feature:'3 Geschmäcker in 1 Gerät',
+    cost:10,sell:40,
+    url:'https://gleevape.com/product/vopk-tripe-60000-puffs-3-in-1-flavors-60k-2-low-nicotine-bulk-buy-wholesale-rechargeable-disposable-vapes-pen/',
+    em:'🧊🧊🧊',col:'#4fc9a4', img:'https://i0.wp.com/gleevape.com/wp-content/uploads/2025/04/VOPK-Tripe-60000-Puffs-3-in-1-Flavors-60K-2-Low-Nicotine-UP-IMG-17.webp?fit=1000%2C1000&ssl=1',
+    flvs:[
+      {n:'Triple-Geschmack Kombis',flv:'other'}
+    ]
+  },
+  {
+    id:'v4',code:'waspe100k',
+    brand:'WASPE',name:'4-in-1 Taste 100000',
+    puffs:100000,puffMax:100000,
+    flavors:12,flavorType:'4-in-1 Umschaltbar',
+    liquid:'56ml (4 x 14ml)',battery:'650mAh (Type-C)',coil:'Quad Mesh Coil 1.0Ω',
+    nic:'2% / 5%',screen:'Smart Monitoring Display',
+    feature:'4 Geschmäcker in 1 Gerät',
+    cost:12,sell:50,
+    url:'https://gleevape.com/product/waspe-4in1-flavor-100000-puffs-authentic-disposable-vape-low-nicotine-bulk-buy-wholesale/',
+    em:'🌟',col:'#c9a44e', img:'https://i0.wp.com/gleevape.com/wp-content/uploads/2025/07/WASPE-4in1-Flavor-100000-Puffs-Authentic-Disposable-Vape-Low-Nicotine-Bulk-Buy-Wholesale-3.webp?fit=1500%2C1500&ssl=1',
+    flvs:[
+      {n:'Verschiedene Quad-Kombinationen',flv:'other'}
+    ]
+  }
+];
+// ═══════════════════ STATE ═══════════════════
+const F={cat:'all',str:'all',flv:'all',brd:'all'};
+const VF={vflv:'all'};
+let SORT='def',VSORT='def',TAB='snus',cartOpen=false,toggling=false;
+const CART={};
+
+const SL=['Nic-Free','Light','Medium','Strong','Extra','Ultra'];
+const FL={mint:'🌿 Mint',berry:'🫐 Berry',fruit:'🍑 Fruit',other:'🌶️ Other'};
+const SEMO={mint:['❄️','🌿','🌬️','🧊'],berry:['🫐','🍇','🍒'],fruit:['🍑','🥭','🍋','🍊','🍌','🥝','🍉'],other:['🌶️','🥤','⚫','🍹']};
+function semo(p){const a=SEMO[p.flv]||SEMO.other;return a[p.id%a.length];}
+function getSeries(p){
+  const n=p.n;
+  if(n.startsWith('Pablo Exclusive')) return 'Pablo Exclusive';
+  if(n.startsWith('Pablo Ice Cold')) return 'Pablo Ice Cold';
+  if(n.startsWith('Pablo Gold')) return 'Pablo Gold Edition';
+  if(n.startsWith('Cuba Black')) return 'Cuba Black';
+  if(n.startsWith('Cuba White')) return 'Cuba White';
+  if(n.startsWith('Grant Extreme')) return 'Grant Extreme';
+  if(n.startsWith('Garant Extreme')) return 'Garant Extreme';
+  if(n.startsWith('Nois Extreme')) return 'Nois Extreme';
+  if(n.startsWith('Fedrs Hard')) return 'Fedrs Hard';
+  if(n.startsWith('V&YOU Boost+')) return 'V&YOU Boost+';
+  if(n.startsWith('V&YOU Boost')) return 'V&YOU Boost';
+  if(n.startsWith('Iceberg')) return 'Iceberg';
+  if(n.startsWith('White Fox')) return 'White Fox';
+  return p.b;
+}
+
+// ═══════════════════ IMAGE CACHE ═══════════════════
+const IC={};
+async function getImg(h){
+  if(h in IC)return IC[h];IC[h]=null;
+  try{
+    const r=await fetch(`https://snuzone.com/products/${h}.js`);
+    if(!r.ok)throw 0;
+    const d=await r.json();
+    const raw=d.featured_image||(d.images&&d.images[0]&&d.images[0].src)||null;
+    IC[h]=raw?('https:'+raw).replace(/\?.*/,'')+('?width=400'):null;
+  }catch(e){IC[h]=null;}
+  return IC[h];
+}
+
+// ═══════════════════ TAB ═══════════════════
+function switchTab(t){
+  TAB=t;
+  document.getElementById('tabS').className='tab'+(t==='snus'?' as':'');
+  document.getElementById('tabV').className='tab'+(t==='vape'?' av':'');
+  const tB=document.getElementById('tabB'); if(tB)tB.className='tab'+(t==='bulk'?' as':'');
+
+  document.getElementById('secS').className='sec'+(t==='snus'?' act':'');
+  document.getElementById('secV').className='sec'+(t==='vape'?' act':'');
+  const sB=document.getElementById('secB'); if(sB)sB.className='sec'+(t==='bulk'?' act':'');
+
+  const sf=document.getElementById('snusF'); if(sf)sf.style.display=t==='snus'?'block':'none';
+  const vf=document.getElementById('vapeF'); if(vf)vf.style.display=t==='vape'?'block':'none';
+  document.getElementById('si').value='';
+  rf();
+}
+
+// ═══════════════════ RENDER ═══════════════════
+function rf(){
+  if(TAB==='snus') renderSnus();
+  else if(TAB==='vape') renderVapes();
+}
+
+// SNUS
+function matchS(p){
+  const q=(document.getElementById('si').value||'').toLowerCase();
+  if(q&&!(p.b.toLowerCase().includes(q)||p.n.toLowerCase().includes(q)||p.flv.includes(q)||p.str.toLowerCase().includes(q)))return false;
+  if(F.cat==='sale'&&p.sell<=(p.cost+1))return false;
+  if(F.str!=='all'&&p.str!==F.str)return false;
+  if(F.flv!=='all'&&p.flv!==F.flv)return false;
+  if(F.brd!=='all'&&p.b!==F.brd)return false;
+  return true;
+}
+function sortS(){
+  const a=[...PS];
+  if(SORT==='asc')a.sort((x,y)=>x.sell-y.sell);
+  else if(SORT==='desc')a.sort((x,y)=>y.sell-x.sell);
+  else if(SORT==='az')a.sort((x,y)=>(x.b+x.n).localeCompare(y.b+y.n));
+  return a;
+}
+function renderSnus(){
+  const g=document.getElementById('grid');
+  const vis=sortS().filter(matchS);
+  
+  // Group by Series
+  const bMap = {};
+  vis.forEach(p => {
+    const s = getSeries(p);
+    if(!bMap[s]) bMap[s] = [];
+    bMap[s].push(p);
+  });
+  const brands = Object.keys(bMap).sort();
+
+  const cc=document.getElementById('cnt');
+  if(cc) cc.textContent = vis.length + ' variants in ' + brands.length + ' series';
+  
+  // Quick Jump Nav
+  const chipsHtml = brands.map(b => `<button class="chip" onclick="document.getElementById('srs-${b.replace(/\s+/g,'-')}').scrollIntoView({behavior:'smooth', block:'start'})">${b}</button>`).join('');
+  document.getElementById('chips').innerHTML = `<div style="display:flex; gap:8px; overflow-x:auto; padding-bottom:10px; margin-bottom:15px; border-bottom:1px solid var(--line2); white-space:nowrap; scrollbar-width:none;"><button class="chip" style="background:var(--gold3);color:var(--gold2)" onclick="window.scrollTo({top:0,behavior:'smooth'})">Top ↑</button>` + chipsHtml + `</div>`;
+
+  if(!brands.length){g.innerHTML=`<div class="nores"><span class="ni">🔍</span><p>No products found.</p></div>`;return;}
+  
+  g.innerHTML=brands.map(bName => {
+    const prods = bMap[bName];
+    
+    let html = `<div class="series-section" id="srs-${bName.replace(/\s+/g,'-')}" style="margin-bottom:30px; scroll-margin-top:120px;">`;
+    html += `<div style="display:flex; justify-content:space-between; align-items:flex-end; border-bottom:2px solid var(--ink3); padding-bottom:8px; margin-bottom:12px;">
+      <h2 style="font-family:'Cormorant Garamond',serif; color:var(--gold2); font-size:1.8rem; margin:0; line-height:1;">${bName}</h2>
+      <span style="font-size:0.8rem; color:var(--cream3);">${prods.length} flavors</span>
+    </div>`;
+    
+    html += `<div class="sgrid">`;
+    html += prods.map(p => {
+      const em=semo(p),sc='s'+p.sl;
+      return `<div class="card" onclick="openMod('snus','${p.id}')">
+        <div class="cimg shim" id="cw${p.id}"><div class="ceph" id="ce${p.id}">${em}</div></div>
+        <div class="cbody">
+          <div class="cbrnd">${p.b}</div>
+          <div class="cname">${p.n}</div>
+          <div class="ctags"><span class="tag ${sc}">${SL[p.sl]}</span><span class="tag tf">${FL[p.flv]}</span></div>
+          <div class="cbot">
+            <div><div class="cpr">€${p.sell}</div><div class="cnic">${p.str}</div></div>
+            <button class="addbtn" onclick="event.stopPropagation();addCart('snus','${p.id}')">＋</button>
+          </div>
+        </div>
+      </div>`;
+    }).join('');
+    html += `</div></div>`;
+    return html;
+  }).join('');
+  
+  vis.forEach(p=>{
+    const w=document.getElementById('cw'+p.id),e=document.getElementById('ce'+p.id);if(!w)return;
+    getImg(p.h).then(url=>{
+      if(!document.getElementById('cw'+p.id))return;
+      w.classList.remove('shim');
+      if(url){const img=new Image();img.alt=p.n;img.loading='lazy';img.crossOrigin='anonymous';
+        img.onload=()=>{img.classList.add('in');if(e&&e.parentNode===w)e.style.opacity='0';};
+        img.onerror=()=>{};img.src=url;w.appendChild(img);
+      }
+    });
+  });
+}
+
+// VAPES
+function matchV(flv){
+  const q=(document.getElementById('si').value||'').toLowerCase();
+  const d=VDEVICES.find(x=>x.flvs.some(f=>f.flv===flv||f.n.toLowerCase().includes(q)));
+  if(VF.vflv!=='all'&&flv!==VF.vflv)return false;
+  return true;
+}
+
+function renderVapes(){
+  const g=document.getElementById('vgrid');
+  const q=(document.getElementById('si').value||'').toLowerCase();
+  const cc=document.getElementById('cnt');
+  if(cc) cc.textContent=VDEVICES.length+' devices';
+  renderVChips();
+
+  // For each device, show one card per available flavour combination
+  // But to keep it manageable, show one card per DEVICE (not per flavour)
+  // User adds device to cart, then specifies flavour in notes
+  let cards=[];
+  VDEVICES.forEach(dev=>{
+    // filter by flavour type
+    if(VF.vflv!=='all'){
+      const hasFlavType=dev.flvs.some(f=>f.flv===VF.vflv);
+      if(!hasFlavType)return;
+    }
+    if(q&&!dev.name.toLowerCase().includes(q)&&!dev.brand.toLowerCase().includes(q))return;
+    cards.push(dev);
+  });
+  if(VSORT==='az')cards.sort((a,b)=>a.name.localeCompare(b.name));
+
+  if(!cards.length){g.innerHTML=`<div class="nores"><span class="ni">🔍</span><p>No vapes found.</p></div>`;return;}
+
+  const puffPct=(p)=>Math.round(p/120000*100);
+
+  g.innerHTML=cards.map(dev=>{
+    const pct=puffPct(dev.puffs);
+    const imgHtml = dev.img ? `<img src="${dev.img}" crossorigin="anonymous" loading="lazy" onerror="this.style.display='none'; this.nextElementSibling.style.opacity='1'" style="width:100%;height:100%;object-fit:contain;position:absolute;inset:0;padding:15px;z-index:1;"><div class="vcard-emo" style="font-size:3.5rem;z-index:1;position:absolute;opacity:0;">${dev.em}</div>` : `<div class="vcard-emo" style="font-size:3.5rem;z-index:1;position:absolute;">${dev.em}</div>`;
+    return `<div class="card" onclick="openModVape('${dev.id}')" style="display:flex; flex-direction:column; padding-bottom:15px;">
+      <div class="vcard-top" style="background:linear-gradient(135deg,#0a1520,#0d1f30); height:160px; position:relative; display:flex; flex-direction:column; justify-content:space-between; align-items:center; padding:10px;">
+        ${imgHtml}
+        <div class="vcard-model" style="color:${dev.col}; position:relative; z-index:2; text-shadow:0 1px 3px rgba(0,0,0,0.8); margin-top:0;">${dev.brand}</div>
+        <div class="vcard-puffs" style="position:relative; z-index:2; text-shadow:0 1px 3px rgba(0,0,0,0.8); margin-top:auto; margin-bottom:5px;">${dev.puffs.toLocaleString()} Züge</div>
+        <div class="puff-bar" style="position:relative; z-index:2; width:80%;"><div class="puff-fill" style="width:${pct}%;background:linear-gradient(90deg,${dev.col},${dev.col}88)"></div></div>
+      </div>
+      <div class="cbody" style="flex:1;">
+        <div class="cbrnd vb">${dev.brand}</div>
+        <div class="cname">${dev.name}</div>
+        <div class="ctags" style="margin-top:8px;">
+          <span class="tag" style="background:${dev.col}18;color:${dev.col};border:1px solid ${dev.col}44">${dev.feature}</span>
+        </div>
+        <div class="cbot" style="margin-top:auto; padding-top:10px;">
+          <div><div class="cpr vp">€${dev.sell}</div><div class="cnic" style="color:var(--cream3);">${dev.flavors?dev.flavors+' Geschmäcker':'3-in-1'}</div></div>
+          <button class="addbtn vp" onclick="event.stopPropagation();addCart('vape','${dev.id}', '${dev.flvs[0].n}')">＋</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ═══════════════════ MODAL ═══════════════════
+let modT=null,modId=null;
+function openMod(type,id){
+  modT=type;modId=id;
+  const mi=document.getElementById('mImg');
+  const sel=document.getElementById('mSelect');
+  const selWrap=document.getElementById('mSelectWrap');
+  if(type==='snus'){
+    const p=PS.find(x=>x.id==id);if(!p)return;
+    const em=semo(p),sc='s'+p.sl;
+    mi.innerHTML=`<div class="meph" id="mph" style="font-size:6rem;">${em}</div>`;
+    getImg(p.h).then(url=>{
+      if(!url)return;const img=new Image();
+      img.style.cssText='max-width:100%;max-height:100%;object-fit:contain;padding:14px;position:absolute;inset:0;margin:auto;opacity:0;transition:opacity .3s';
+      img.onload=()=>{img.style.opacity='1';const ph=document.getElementById('mph');if(ph)ph.style.opacity='0';};
+      img.src=url;mi.appendChild(img);
+    });
+    document.getElementById('mBrnd').textContent=p.b;
+    document.getElementById('mBrnd').className='mbrnd';
+    document.getElementById('mName').textContent=p.n;
+    document.getElementById('mTags').innerHTML=`<span class="tag ${sc}" style="font-size:.72rem;padding:3px 9px">${SL[p.sl]}</span><span class="tag tf" style="font-size:.72rem;padding:3px 9px">${FL[p.flv]}</span>`;
+    document.getElementById('mSpec').innerHTML=`<div class="sr"><span class="sl2">Brand</span><span class="sv">${p.b}</span></div><div class="sr"><span class="sl2">Strength</span><span class="sv">${p.str}</span></div><div class="sr"><span class="sl2">Flavour</span><span class="sv">${FL[p.flv]}</span></div>`;
+    selWrap.style.display='none';
+    document.getElementById('mPr').textContent='€'+p.sell;
+    document.getElementById('mPr').className='mpr';
+    document.getElementById('mAdd').className='madd';
+  }
+  document.getElementById('ovl').classList.add('open');document.body.style.overflow='hidden';
+}
+
+function openModVape(id){
+  modT='vape';modId=id;
+  const dev=VDEVICES.find(x=>x.id===id);if(!dev)return;
+  const mi=document.getElementById('mImg');
+  const sel=document.getElementById('mSelect');
+  const selWrap=document.getElementById('mSelectWrap');
+  if(dev.img){
+    mi.innerHTML=`<img src="${dev.img}" style="max-width:100%;max-height:100%;object-fit:contain;padding:20px;position:absolute;inset:0;margin:auto;">`;
+  } else {
+    mi.innerHTML=`<div class="meph" style="font-size:6rem;">${dev.em}</div>`;
+  }
+  document.getElementById('mBrnd').textContent=dev.brand;
+  document.getElementById('mBrnd').className='mbrnd vb';
+  document.getElementById('mName').textContent=dev.name;
+  document.getElementById('mTags').innerHTML=`<span class="tag" style="background:${dev.col}18;color:${dev.col};border:1px solid ${dev.col}44;font-size:.7rem;padding:3px 9px">${dev.feature}</span>`;
+  document.getElementById('mSpec').innerHTML=`
+    <span style="display:block;margin-bottom:3px;"><strong>Puffs:</strong> ${dev.puffs.toLocaleString()}</span>
+    <span style="display:block;margin-bottom:3px;"><strong>Nicotine:</strong> ${dev.nic}</span>
+    <span style="display:block;margin-bottom:3px;"><strong>Battery:</strong> ${dev.battery}</span>
+    <span style="display:block;margin-bottom:3px;"><strong>Display:</strong> ${dev.screen}</span>
+  `;
+  selWrap.style.display='block';
+  sel.innerHTML = dev.flvs.map(f => `<option value="${f.n}">${f.n}</option>`).join('');
+  document.getElementById('mPr').textContent='€'+dev.sell;document.getElementById('mPr').className='mpr vp';
+  document.getElementById('mAdd').className='madd vp';
+  document.getElementById('ovl').classList.add('open');document.body.style.overflow='hidden';
+}
+
+function closeMod(){document.getElementById('ovl').classList.remove('open');document.body.style.overflow='';modT=modId=null;}
+function ovlClick(e){if(e.target===document.getElementById('ovl'))closeMod();}
+document.getElementById('mAdd').onclick=()=>{
+  if(modT==='snus'){
+    addCart('snus', modId);
+  } else if(modT==='vape'){
+    addCart('vape', modId, document.getElementById('mSelect').value);
+  }
+  closeMod();
+};
+
+// ═══════════════════ CART ═══════════════════
+function addCart(type,id,flvText=''){
+  const key=`${type}:${id}` + (flvText ? `:${flvText.replace(/\s+/g,'_')}` : '');
+  if(CART[key]){CART[key].qty++;}
+  else{
+    let name,price,brand;
+    if(type==='snus'){
+      const p=PS.find(x=>x.id==id);
+      name=p.n;price=p.sell;brand=p.b;
+      CART[key]={type,name,price,brand,item:p,qty:1};
+    } else {
+      const d=VDEVICES.find(x=>x.id===id);
+      name=d.name + (flvText ? ` (${flvText})` : ''); price=d.sell; brand=d.brand;
+      CART[key]={type,name,price,brand,item:d,qty:1};
+    }
+  }
+  renderCart();
+  const label=CART[key].brand + ' ' + (type==='snus'? CART[key].name : CART[key].name.split(' (')[0]);
+  toast(`${label} added`,'ok');
+  if(!cartOpen)toggleCart();
+}
+function rmCart(k){delete CART[k];renderCart();}
+function chgQty(k,d){if(!CART[k])return;CART[k].qty+=d;if(CART[k].qty<=0)delete CART[k];renderCart();}
+function cartList(){return Object.entries(CART).map(([k,v])=>({key:k,...v}));}
+function cartTot(){return cartList().reduce((s,c)=>s+c.price*c.qty,0);}
+function cartCnt(){return cartList().reduce((s,c)=>s+c.qty,0);}
+function clearCart(){Object.keys(CART).forEach(k=>delete CART[k]);renderCart();toast('Gelöscht','inf');}
+
+function renderCart(){
+  const items=cartList(),cnt=cartCnt();
+  const n=document.getElementById('cartN');
+  n.textContent=cnt;n.classList.toggle('hide',cnt===0);
+  const ftr=document.getElementById('cftr'),emp=document.getElementById('cempty'),ci=document.getElementById('citems');
+  if(!items.length){emp.style.display='flex';ftr.style.display='none';ci.querySelectorAll('.ci').forEach(e=>e.remove());return;}
+  emp.style.display='none';ftr.style.display='block';
+  document.getElementById('ctot').textContent='€'+cartTot();
+  document.getElementById('ctN').textContent=cnt;
+  ci.querySelectorAll('.ci').forEach(e=>e.remove());
+  items.forEach((it,idx)=>{
+    if (!it.item) return;
+    const isV=it.type==='vape';
+    const em=isV?it.item.em:semo(it.item);
+    const d=document.createElement('div');d.className='ci';
+    d.innerHTML=`
+      <div class="ci-n">${idx+1}</div>
+      <div class="cithumb" id="ct${it.key.replace(/:/g,'_')}">${em}</div>
+      <div class="ciinfo">
+        <div class="cibrnd${isV?' vb':''}">${it.brand}</div>
+        <div class="ciname">${it.name}</div>
+        <div class="ciprice${isV?' vp':''}">€${it.price} × ${it.qty} = €${it.price*it.qty}</div>
+      </div>
+      <div class="ciqty">
+        <button class="qb" onclick="chgQty('${it.key}',-1)">−</button>
+        <span class="qn">${it.qty}</span>
+        <button class="qb" onclick="chgQty('${it.key}',1)">＋</button>
+      </div>
+      <button class="cirm" onclick="rmCart('${it.key}')">✕</button>`;
+    ci.appendChild(d);
+    
+    const tid=`ct${it.key.replace(/:/g,'_')}`;
+    if(!isV && it.item.h){
+      getImg(it.item.h).then(url=>{
+        const tw=document.getElementById(tid);
+        if(!tw||!url)return;
+        const img=new Image();img.style.cssText='width:100%;height:100%;object-fit:contain;padding:2px';
+        img.src=url;tw.innerHTML='';tw.appendChild(img);
+      });
+    } else if(isV && it.item.img){
+      const tw=document.getElementById(tid);
+      if(tw){
+        const img=new Image();img.style.cssText='width:100%;height:100%;object-fit:contain;padding:2px';
+        img.src=it.item.img;tw.innerHTML='';tw.appendChild(img);
+      }
+    }
+  });
+}
+
+function toggleCart(e){
+  if(toggling) return;
+  toggling=true; setTimeout(()=>toggling=false, 400);
+  
+  if(e) {
+    if (e.stopImmediatePropagation) e.stopImmediatePropagation();
+    e.preventDefault();
+    e.stopPropagation();
+  }
+  
+  cartOpen = !cartOpen;
+  console.log('Cart State changed to:', cartOpen);
+  
+  const dr=document.getElementById('cdrw'), ma=document.getElementById('mainA');
+  if(dr) dr.classList.toggle('open', cartOpen);
+  if(ma) ma.classList.toggle('co', cartOpen);
+  if(cartOpen) renderCart();
+}
+
+// ═══════════════════ COPY / EXPORT ═══════════════════
+function buildTxt(){
+  const items=cartList();
+  const name=document.getElementById('cName').value.trim();
+  const snap=document.getElementById('cSnap').value.trim();
+  const note=document.getElementById('cNote').value.trim();
+  const now=new Date().toLocaleString('de-DE');
+  const snusI=items.filter(i=>i.type==='snus');
+  const vapeI=items.filter(i=>i.type==='vape');
+  let t='╔══════════════════════════════════════╗\n║           MEINE BESTELLUNG           ║\n╚══════════════════════════════════════╝\n';
+  t+=`📅 Datum:  ${now}\n`;
+  if(name)t+=`👤 Name:   ${name}\n`;
+  if(snap)t+=`📱 Snap:   ${snap}\n`;
+  t+='\n';
+  if(snusI.length){
+    t+='🌿 SNUS\n';
+    t+='──────────────────────────────────────\n';
+    snusI.forEach((ci,i)=>{
+      t+=`${i+1}. ${ci.brand} — ${ci.name}\n   ${ci.item.str} · Anz: ${ci.qty} × €${ci.price} = €${ci.price*ci.qty}\n`;
+    });
+    t+=`\n   Snus Zwischensumme: €${snusI.reduce((s,c)=>s+c.price*c.qty,0)}\n\n`;
+  }
+  if(vapeI.length){
+    t+='💨 VAPES\n';
+    t+='──────────────────────────────────────\n';
+    vapeI.forEach((ci,i)=>{
+      t+=`${i+1}. ${ci.brand} ${ci.name}\n   Anz: ${ci.qty} × €${ci.price} = €${ci.price*ci.qty}\n\n`;
+    });
+    t+=`   Vapes Zwischensumme: €${vapeI.reduce((s,c)=>s+c.price*c.qty,0)}\n\n`;
+  }
+  t+='══════════════════════════════════════\n';
+  t+=`💶 GESAMT: €${cartTot()}   (${cartCnt()} Artikel)\n`;
+  t+='══════════════════════════════════════\n';
+  if(note)t+=`\n📝 Notizen: ${note}\n`;
+  return t;
+}
+
+// REPLACE THIS URL WITH YOUR GOOGLE APPS SCRIPT WEB APP URL
+const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxtJxGIHvLMwvHliswK3Kp3cABccRtcxIVeDe_dS4xjerW7hEED7lh-t6rVuIlAmsBOzA/exec";
+
+function submitOrder(){
+  const items = cartList();
+  if(!items.length) return toast('Warenkorb ist leer', 'inf');
+  
+  const name = document.getElementById('cName').value.trim();
+  const snap = document.getElementById('cSnap').value.trim();
+  const note = document.getElementById('cNote').value.trim();
+  
+  if(!name || !snap) return toast('Bitte Name und Snapchat angeben', 'inf');
+
+  const btn = document.getElementById('submitBtn');
+  const statusEl = document.getElementById('subStatus');
+  const ogText = btn.innerHTML;
+  
+  // Create order summary string
+  let orderSummary = '';
+  items.forEach(i => {
+    orderSummary += `${i.qty}x ${i.brand} ${i.name} (€${i.price*i.qty})\n`;
+  });
+  
+  const payload = {
+    name: name,
+    snapchat: snap,
+    total: cartTot(),
+    items: orderSummary,
+    notes: note,
+    date: new Date().toISOString()
+  };
+
+  btn.innerHTML = '⏳ Senden...';
+  btn.style.pointerEvents = 'none';
+
+  fetch(GOOGLE_SCRIPT_URL, {
+    method: 'POST',
+    mode: 'no-cors', // Critical for Google Scripts from frontend
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload)
+  }).then(() => {
+    btn.innerHTML = '<div class="cflash" style="opacity:1">✓ Erfolg!</div>';
+    setTimeout(() => {
+      clearCart();
+      toggleCart();
+      btn.innerHTML = ogText;
+      btn.style.pointerEvents = 'auto';
+    }, 2000);
+  }).catch(e => {
+    btn.innerHTML = '❌ Fehler';
+    toast('Fehler beim Senden', 'inf');
+    setTimeout(() => {
+      btn.innerHTML = ogText;
+      btn.style.pointerEvents = 'auto';
+    }, 2000);
+  });
+}
+
+function exportOrder(){
+  if(!cartList().length)return;
+  const blob=new Blob([buildTxt()],{type:'text/plain;charset=utf-8'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  const nm=document.getElementById('cName').value.trim();
+  a.download=`order${nm?'-'+nm.replace(/\s+/g,'_'):''}-${new Date().toISOString().slice(0,10)}.txt`;
+  a.href=url;a.click();URL.revokeObjectURL(url);
+  toast('Downloaded!','ok');
+}
+
+// ═══════════════════ FILTERS ═══════════════════
+function setF(k,v,btn){F[k]=v;document.querySelectorAll(`[data-k="${k}"]`).forEach(b=>b.classList.remove('on'));btn.classList.add('on');rf();}
+function setSort(m,btn){SORT=m;document.querySelectorAll('.sbtn').forEach(b=>b.classList.remove('on'));btn.classList.add('on');rf();}
+function clearAll(){Object.keys(F).forEach(k=>F[k]='all');document.getElementById('si').value='';document.querySelectorAll('[data-v="all"]').forEach(b=>b.classList.add('on'));document.querySelectorAll('[data-v]:not([data-v="all"])').forEach(b=>b.classList.remove('on'));rf();}
+function setVF(k,v,btn){VF[k]=v;document.querySelectorAll(`[data-k="${k}"]`).forEach(b=>{b.classList.remove('on');b.classList.remove('onv');});btn.classList.add('onv');rf();}
+function setVSort(m,btn){VSORT=m;document.querySelectorAll('.sbtn').forEach(b=>b.classList.remove('on'));btn.classList.add('on');rf();}
+function clearVF(){Object.keys(VF).forEach(k=>VF[k]='all');document.getElementById('si').value='';document.querySelectorAll('[data-k^="v"]').forEach(b=>{b.classList.remove('on');b.classList.remove('onv');});document.querySelectorAll('[data-v="all"][data-k^="v"]').forEach(b=>b.classList.add('onv'));rf();}
+
+const FLBLM={cat:{sale:'Best Value'},str:{Leicht:'Light',Mittelstark:'Medium','Stärker':'Strong','Extra Stark':'Extra Strong','Ultra Stark':'Ultra Strong'},flv:{mint:'Mint',berry:'Berry',fruit:'Fruit',other:'Other'},brd:{}};
+function renderChips(){
+  const bar=document.getElementById('chips');let h='';
+  for(const[k,v]of Object.entries(F)){
+    if(v==='all')continue;
+    const l=(FLBLM[k]&&FLBLM[k][v])||v;
+    h+=`<div class="chip">${l}<button class="cx" onclick="setF('${k}','all',document.querySelector('[data-k=\\'${k}\\'][data-v=\\'all\\']'))">✕</button></div>`;
+  }
+  const q=document.getElementById('si').value;
+  if(q)h+=`<div class="chip">🔍"${q}"<button class="cx" onclick="document.getElementById('si').value='';rf()">✕</button></div>`;
+  bar.innerHTML=h;bar.style.marginBottom=h?'10px':'0';
+}
+function renderVChips(){
+  const bar=document.getElementById('vchips');let h='';
+  const VM={vflv:{fruit:'Fruit',berry:'Berry',mint:'Mint',tropical:'Tropical',sweet:'Sweet'}};
+  for(const[k,v]of Object.entries(VF)){
+    if(v==='all')continue;
+    const l=(VM[k]&&VM[k][v])||v;
+    h+=`<div class="chip">${l}<button class="cx" onclick="setVF('${k}','all',document.querySelector('[data-k=\\'${k}\\'][data-v=\\'all\\']'))">✕</button></div>`;
+  }
+  bar.innerHTML=h;bar.style.marginBottom=h?'10px':'0';
+}
+
+// ═══════════════════ MOBILE FILTERS ═══════════════════
+function openFilters(){
+  // Clone sidebar filters into mobile sheet
+  const mf=document.getElementById('mobileFilters');
+  const src=TAB==='snus'?document.getElementById('snusF'):document.getElementById('vapeF');
+  mf.innerHTML=src.innerHTML;
+  // Rewire buttons
+  mf.querySelectorAll('.fb').forEach(btn=>{
+    btn.onclick=function(){
+      const k=this.getAttribute('data-k'),v=this.getAttribute('data-v');
+      if(TAB==='snus'){setF(k,v,this);document.querySelectorAll(`[data-k="${k}"]`).forEach(b=>{b.classList.remove('on');if(b.getAttribute('data-v')===v)b.classList.add('on');});}
+      else{setVF(k,v,this);}
+    };
+  });
+  document.getElementById('filterOverlay').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+function closeFilters(){document.getElementById('filterOverlay').classList.remove('open');document.body.style.overflow='';}
+function overlayFilterClick(e){if(e.target===document.getElementById('filterOverlay'))closeFilters();}
+
+// ═══════════════════ TOAST ═══════════════════
+let tT=null;
+function toast(msg,type){
+  const t=document.getElementById('toast'),ti=document.getElementById('ti'),tm=document.getElementById('tm');
+  ti.className=type==='ok'?'tiok':'tiinf';ti.textContent=type==='ok'?'✓':'ℹ';tm.textContent=msg;
+  t.classList.add('show');if(tT)clearTimeout(tT);tT=setTimeout(()=>t.classList.remove('show'),2200);
+}
+
+// ═══════════════════ TIMERS ═══════════════════
+// Snus: April 20, then every 14 days
+const SA=new Date(2026,3,20,20,0,0);
+// Vapes: April 14, then every 30 days
+const VA=new Date(2026,3,14,20,0,0);
+
+function nextD(a,days){
+  const now=Date.now(),cy=days*86400000;let n=a.getTime();
+  while(n<=now)n+=cy;return new Date(n);
+}
+function p2(n){return String(n).padStart(2,'0');}
+function tick(an,days,ids,msgId){
+  const nx=nextD(an,days),diff=nx-Date.now();
+  if(diff<=0){tick(an,days,ids,msgId);return;}
+  const d=Math.floor(diff/86400000),h=Math.floor((diff%86400000)/3600000),m=Math.floor((diff%3600000)/60000),s=Math.floor((diff%60000)/1000);
+  ids.forEach((id,i)=>document.getElementById(id).textContent=p2([d,h,m,s][i]));
+  const msg=document.getElementById(msgId);
+  if(d===0&&h<6){msg.className='tmsg urg';msg.textContent='⚠ Last chance!';}
+  else{msg.className='tmsg';msg.textContent=`— ${nx.toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short'})}`;}
+}
+setInterval(()=>{tick(SA,14,['sD','sH','sM','sS'],'smsg');},1000);
+setInterval(()=>{tick(VA,30,['vD','vH','vM','vS'],'vmsg');},1000);
+tick(SA,14,['sD','sH','sM','sS'],'smsg');
+tick(VA,30,['vD','vH','vM','vS'],'vmsg');
+
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeMod();closeFilters();if(cartOpen)toggleCart();}});
+rf();
+</script>
+</body>
+</html>
